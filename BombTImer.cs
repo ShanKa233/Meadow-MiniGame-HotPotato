@@ -13,6 +13,11 @@ namespace Meadow_MiniGame_HotPotato
         private Player? player;  // 当前玩家
         private float lastSoundTime;  // 上次播放声音的时间
         private float lastBeepValue;  // 上次计时的数值
+        
+        // 平滑计时器相关变量
+        private float counter; // 当前计时器值
+        private float lastCounter; // 上一帧计时器值
+        private float smoothCounter; // 平滑后的计时器值
 
         // 构造函数：初始化计时器
         public BombTImer(HUD.HUD hud, FContainer fContainer, HotPotatoArena tgm) : base(hud)
@@ -35,6 +40,11 @@ namespace Meadow_MiniGame_HotPotato
             // 初始化音效变量
             lastSoundTime = float.MaxValue;
             lastBeepValue = float.MaxValue;
+            
+            // 初始化计时器变量
+            counter = HotPotatoArena.bombTimer;
+            lastCounter = counter;
+            smoothCounter = counter / 40f;
         }
 
         // 计算标签的绘制位置
@@ -48,24 +58,19 @@ namespace Meadow_MiniGame_HotPotato
         {
             base.Update();
             player = hud.owner as Player;
-            if (player == null) return;
-
-            // 播放计时音效
-            float currentTime = HotPotatoArena.bombTimer/40f;
-            if (ShouldPlaySound(currentTime))
-            {
-                PlayTimerSound();
-                lastSoundTime = currentTime;
-            }
+            
+            // 只更新最基本的数据，不做处理
+            lastCounter = counter;
+            counter = HotPotatoArena.bombTimer;
         }
 
         // 判断是否应该播放音效
-        private bool ShouldPlaySound(float currentTime)
+        private bool ShouldPlaySound(float currentTime, float lastTime)
         {
             if (currentTime <= 0 || !timerLabel.isVisible) return false;
             
             float freq = GetSoundFrequency(currentTime);
-            return (lastSoundTime - currentTime) >= (1f / freq);
+            return (lastTime - currentTime) >= (1f / freq);
         }
 
         // 获取音效频率（根据剩余时间调整）
@@ -94,26 +99,49 @@ namespace Meadow_MiniGame_HotPotato
         public override void Draw(float timeStacker)
         {
             base.Draw(timeStacker);
-            if (HotPotatoArena.bombTimer <0)
+            
+            if (counter < 0)
             {
                 timerLabel.isVisible = false;
                 return;
             }
             
+            // 平滑插值计时器
+            smoothCounter = Mathf.Lerp(lastCounter / 40f, counter / 40f, timeStacker);
+            
+            // 更新标签
             timerLabel.isVisible = true;
-            timerLabel.text = FormatTime(HotPotatoArena.bombTimer/40f);
+            timerLabel.text = FormatTime(Mathf.Max(0f, smoothCounter));
 
             // 当剩余时间小于10秒时闪烁
-            if (HotPotatoArena.bombTimer/40f < 10)
+            if (smoothCounter < 10)
             {
                 timerLabel.alpha = Mathf.PingPong(Time.time * 2, 1);
                 // 设置颜色
-                timerLabel.color = GetTimerColor(HotPotatoArena.bombTimer/40f);
+                timerLabel.color = GetTimerColor(smoothCounter);
             }
             else
             {
                 timerLabel.alpha = 1;
                 timerLabel.color = Color.white;
+            }
+            
+            // 播放音效 - 在Draw方法中处理
+            if (player != null && counter > 0 && smoothCounter > 0)
+            {
+                float lastTime = lastSoundTime;
+                if (ShouldPlaySound(smoothCounter, lastTime))
+                {
+                    PlayTimerSound();
+                    lastSoundTime = smoothCounter;
+                }
+            }
+            
+            // 计时器结束
+            if (smoothCounter <= 0f && counter <= 0)
+            {
+                timerLabel.text = "轰！";
+                timerLabel.color = Color.red;
             }
         }
 

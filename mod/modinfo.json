@@ -1,7 +1,7 @@
 {
 	"id": "ShanKa.MiniGameHotPotato",
 	"name": "Meadow Mini Game Hot Potato",
-	"version": "0.0.8", 
+	"version": "0.0.9", 
 	"authors": "ShanKa",
 	"description": "为雨甸添加热土豆小游戏<LINE>Add Hot Potato mini game for Rain Meadow<LINE>特别鸣谢：感谢哈维和诺谱以前做得热土豆小游戏<LINE>Special thanks: Thanks to Harvie and Nop for making the hot potato mini game",
 	"requirements": [ "henpemaz_rainmeadow"]

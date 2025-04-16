@@ -16,7 +16,7 @@ namespace Meadow_MiniGame_HotPotato
                 if (bombTimer <= 0)
                 {
                     HotPotatoArena.bombTimer = HotPotatoArena.initialBombTimer;
-                    Debug.LogWarning($"Received invalid bombTimer value: {bombTimer}, setting to default: {HotPotatoArena.initialBombTimer}");
+                    // Debug.LogWarning($"Received invalid bombTimer value: {bombTimer}, setting to default: {HotPotatoArena.initialBombTimer}");
                 }
                 else
                 {
@@ -26,7 +26,6 @@ namespace Meadow_MiniGame_HotPotato
                 HotPotatoArena.bombHolder = bombHolder;
                 potatoArena.IsGameOver = isGameOver;
 
-                Debug.Log($"SyncRemix: bombTimer synchronized to {HotPotatoArena.bombTimer}");
             }
         }
 
@@ -38,13 +37,13 @@ namespace Meadow_MiniGame_HotPotato
             {
                 var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
                 var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-                RainMeadow.RainMeadow.Debug($"Passing bomb to player: {newHolder.inLobbyId}");
+                // RainMeadow.RainMeadow.Debug($"Passing bomb to player: {newHolder.inLobbyId}");
 
                 HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
                 HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
                 HotPotatoArena.bombHolder = newHolder;
 
-                RainMeadow.RainMeadow.Debug($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
+                // RainMeadow.RainMeadow.Debug($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
 
                 // 同步新的计时器状态给所有玩家
                 foreach (var player in OnlineManager.players)
@@ -74,7 +73,7 @@ namespace Meadow_MiniGame_HotPotato
             }
             else
             {
-                Debug.LogError("Failed to pass bomb: Invalid game mode or arena not found");
+                // Debug.LogError("Failed to pass bomb: Invalid game mode or arena not found");
             }
         }
         public static void PassBomb_Local(OnlinePlayer newHolder)
@@ -125,29 +124,15 @@ namespace Meadow_MiniGame_HotPotato
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)
                         {
-                            var room = player.room;
-                            var vector = player.bodyChunks[1].pos;
-                            room.AddObject(new Explosion.ExplosionLight(vector, 280f, 1f, 7, player.ShortCutColor()));
-                            room.AddObject(new Explosion.ExplosionLight(vector, 230f, 1f, 3, new Color(1f, 1f, 1f)));
-                            room.AddObject(new ExplosionSpikes(room, vector, 14, 30f, 9f, 7f, 170f, player.ShortCutColor()));
-                            room.AddObject(new ShockWave(vector, 330f, 0.045f, 5));
-                            room.AddObject(new Explosion(room, player, vector, 7, 250f, 30f, 1, 280f, 0f, player, 0.7f, 160f, 1f));
-                            room.PlaySound(SoundID.Bomb_Explode, vector, player.abstractCreature);
-
-                            for (int i = 0; i < 30; i++)
-                            {
-                                room.AddObject(new APieceOfSlug(vector, (RWCustom.Custom.RNV() + Vector2.up * 2).normalized * 40f * Random.value + player.mainBodyChunk.vel, player));
-                            }
-                            player.Die();
-                            player.Destroy();
-                            break;
+                            potatoArena.ExplosionPlayer_Local(player);
+                            return;
                         }
                     }
                 }
             }
             else
             {
-                Debug.LogError("Failed to explode bomb: Invalid game mode or arena not found");
+                // Debug.LogError("Failed to explode bomb: Invalid game mode or arena not found");
             }
         }
     }
