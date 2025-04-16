@@ -11,9 +11,21 @@ namespace Meadow_MiniGame_HotPotato
             if(RainMeadow.RainMeadow.isArenaMode(out var arena))
             {
                 var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-                HotPotatoArena.bombTimer = bombTimer;
+                // 确保bombTimer值有效
+                if (bombTimer <= 0)
+                {
+                    HotPotatoArena.bombTimer = HotPotatoArena.initialBombTimer;
+                    Debug.LogWarning($"Received invalid bombTimer value: {bombTimer}, setting to default: {HotPotatoArena.initialBombTimer}");
+                }
+                else
+                {
+                    HotPotatoArena.bombTimer = bombTimer;
+                }
+                
                 potatoArena.potatoData.bombHolder = bombHolder;
                 potatoArena.IsGameOver = isGameOver;
+                
+                Debug.Log($"SyncRemix: bombTimer synchronized to {HotPotatoArena.bombTimer}");
             }
         }
 
@@ -34,13 +46,19 @@ namespace Meadow_MiniGame_HotPotato
                 // 在传递炸弹时重置爆炸时间
                 if (OnlineManager.lobby.isOwner)
                 {
+                    // 确保nextBombTimer值有效
+                    if (HotPotatoArena.bombTimer <= 0)
+                    {
+                        HotPotatoArena.nextBombTimer = HotPotatoArena.initialBombTimer;
+                    }
+                    
                     HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
                     Debug.Log($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
                     
                     // 同步新的计时器状态给所有玩家
                     foreach (var player in OnlineManager.players)
                     {
-                        if (!player.isMe)
+                        if (player != null && !player.isMe)
                         {
                             player.InvokeOnceRPC(SyncRemix, HotPotatoArena.bombTimer, newHolder, potatoArena.IsGameOver);
                         }
@@ -52,8 +70,9 @@ namespace Meadow_MiniGame_HotPotato
                 // 给新的炸弹持有者添加晕眩效果
                 foreach (var abstractCreature in game.session.Players)
                 {
-                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                        onlineObject.owner == newHolder)
+                    if (abstractCreature != null && 
+                        OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
+                        onlineObject != null && onlineObject.owner == newHolder)
                     {
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)

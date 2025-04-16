@@ -50,7 +50,7 @@ namespace Meadow_MiniGame_HotPotato
             foreach (var abstractCreature in session.Players)
             {
                 if (abstractCreature == null) continue;
-                
+
                 try
                 {
                     if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
@@ -81,17 +81,17 @@ namespace Meadow_MiniGame_HotPotato
                 if (bombHolder.room.ViewedByAnyCamera(bombHolder.firstChunk.pos, 300f) && bombHolderSmoke != null)
                 {
                     bombHolderSmoke.Update(false);
-                    
+
                     // 根据剩余时间改变颜色
                     Color smokeColor = Custom.HSL2RGB(
-                        Custom.LerpMap(bombTimer, 20 * 40, 0, 144, 0) / 360f, 
-                        1f, 
+                        Custom.LerpMap(bombTimer, 20 * 40, 0, 144, 0) / 360f,
+                        1f,
                         0.5f);
-                    
+
                     // 发射烟雾
                     bombHolderSmoke.EmitSmoke(
-                        bombHolder.firstChunk.pos, 
-                        Custom.RNV(), 
+                        bombHolder.firstChunk.pos,
+                        Custom.RNV(),
                         smokeColor,
                         (int)Custom.LerpMap(bombTimer, 20 * 40, 0, 25f, 40f));
                 }
@@ -153,11 +153,12 @@ namespace Meadow_MiniGame_HotPotato
             potatoData = new PotatoData();
             IsGameOver = false;
 
+            // 所有玩家都设置初始炸弹时间，防止计时器为0
+            bombTimer = initialBombTimer;
+            nextBombTimer = initialBombTimer;
+
             if (OnlineManager.lobby.isOwner)
             {
-                bombTimer = initialBombTimer;
-                nextBombTimer = initialBombTimer;
-
                 // 随机选择一个玩家作为炸弹持有者
                 if (OnlineManager.players.Count > 0)
                 {
@@ -174,6 +175,14 @@ namespace Meadow_MiniGame_HotPotato
                     }
                 }
             }
+
+            // 确保bombTimer不为0或负数
+            if (bombTimer <= 0)
+            {
+                bombTimer = initialBombTimer;
+            }
+
+            UnityEngine.Debug.Log($"ArenaSessionCtor: bombTimer initialized to {bombTimer}");
         }
         public override void ArenaSessionUpdate(ArenaOnlineGameMode arena, ArenaGameSession session)
         {
@@ -186,23 +195,11 @@ namespace Meadow_MiniGame_HotPotato
             }
 
             // 确保potatoData已初始化
-            if (potatoData == null)
-            {
-                potatoData = new PotatoData();
-            }
+            potatoData = new PotatoData();
 
-            // 处理炸弹持有者特效
-            UpdateBombHolderEffects(session);
 
             if (OnlineManager.lobby.isOwner)
             {
-                // 检查游戏是否应该结束
-                if (ShouldGameEnd(session))
-                {
-                    IsGameOver = true;
-                    bombTimer = -1;
-                    return;
-                }
                 // 检查当前是否有炸弹持有者
                 if (potatoData?.bombHolder == null)
                 {
@@ -238,43 +235,13 @@ namespace Meadow_MiniGame_HotPotato
                             bombTimer = -1;
                             return;
                         }
-                        nextBombTimer = Custom.IntClamp(nextBombTimer%40 - 5, 4, initialBombTimer)*40;
+                        nextBombTimer = Custom.IntClamp(nextBombTimer % 40 - 5, 4, initialBombTimer) * 40;
                         bombTimer = nextBombTimer;
                     }
                 }
             }
-
-            // 为炸弹持有者添加额外的火花效果
-            if (potatoData?.bombHolder != null && session.Players != null)
-            {
-                foreach (var abstractCreature in session.Players)
-                {
-                    if (abstractCreature == null) continue;
-                    
-                    try
-                    {
-                        if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                            onlineObject != null && onlineObject.owner == potatoData.bombHolder)
-                        {
-                            var player = abstractCreature.realizedCreature as Player;
-                            if (player != null && player.room != null && player.playerState.alive)
-                            {
-                                // 添加火花效果
-                                for(int i=0;i<5;i++)
-                                {
-                                    Vector2 vector = Custom.RNV();
-                                    player.room.AddObject(new Spark(player.firstChunk.pos + vector * 40f, vector * Mathf.Lerp(4f, 30f, Random.value), Color.white, null, 8, 24));
-                                }
-                            }
-                        }
-                    }
-                    catch (System.Exception e)
-                    {
-                        UnityEngine.Debug.LogError($"Fire spark effect error: {e.Message}");
-                        continue;
-                    }
-                }
-            }
+            // 处理炸弹持有者特效
+            UpdateBombHolderEffects(session);
         }
         public void BombExplosion(ArenaGameSession session)
         {

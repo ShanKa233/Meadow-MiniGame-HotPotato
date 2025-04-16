@@ -100,3 +100,4 @@ C:\Users\Shan_\source\repos\Meadow MiniGame HotPotato\bin\Debug\net48\MiniGameHo
 C:\Users\Shan_\source\repos\Meadow MiniGame HotPotato\bin\Debug\net48\MiniGameHotPotato.pdb
 C:\Users\Shan_\source\repos\Meadow MiniGame HotPotato\obj\Debug\net48\MiniGameHotPotato.dll
 C:\Users\Shan_\source\repos\Meadow MiniGame HotPotato\obj\Debug\net48\MiniGameHotPotato.pdb
+C:\Users\Shan_\source\repos\Meadow MiniGame HotPotato\obj\Debug\net48\Meadow MiniGame HotPotato.sourcelink.json
