@@ -146,8 +146,17 @@ namespace Meadow_MiniGame_HotPotato
 
         public override void HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, HUD.HUD self, ArenaGameSession session)
         {
-
+            //添加炸弹计时器,最重要
             self.AddPart(new BombTImer(self, self.fContainers[0], this));
+
+            // 如果允许聊天，添加聊天HUD
+            if (MatchmakingManager.currentInstance.canSendChatMessages) 
+                self.AddPart(new ChatHud(self, session.game.cameras[0]));
+            
+            // 添加观战HUD    
+            self.AddPart(new SpectatorHud(self, session.game.cameras[0]));
+            // 添加在线状态HUD
+            self.AddPart(new OnlineHUD(self, session.game.cameras[0], arena));
         }
         public override string TimerText()
         {
@@ -163,6 +172,7 @@ namespace Meadow_MiniGame_HotPotato
 
             InitGame();
 
+            //主机选择炸弹持有者
             if (OnlineManager.lobby.isOwner)
             {
                 // 随机选择一个玩家作为炸弹持有者
