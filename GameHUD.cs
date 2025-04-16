@@ -209,7 +209,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             alpha = Mathf.Lerp(alpha, reval ? 1f : 0f, 0.15f);
 
-            Vector2 anchor = new Vector2(Custom.rainWorld.options.ScreenSize.x / 2f, Custom.rainWorld.options.ScreenSize.y - 140f);
+            Vector2 anchor = new Vector2(Custom.rainWorld.options.ScreenSize.x / 2f, Custom.rainWorld.options.ScreenSize.y - 80f);
             int uppderIndex = index + 1;
             float t = floatIndex - (float)index;
             float reverseT = 1f - t;

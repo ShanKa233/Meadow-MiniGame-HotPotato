@@ -28,7 +28,7 @@ namespace Meadow_MiniGame_HotPotato
 
 
         public const int initialBombTimer = 30 * 40; // 初始炸弹爆炸时间
-        public const int minPlayersRequired = 1; // 最少需要的玩家数量
+        public const int minPlayersRequired = 2; // 最少需要的玩家数量
 
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
@@ -97,7 +97,9 @@ namespace Meadow_MiniGame_HotPotato
 
                     // 发射烟雾
                     bombHolderSmoke.EmitSmoke(
-                        bombHolder.bodyChunks[1].pos,
+                        // bombHolder.bodyChunks[1].pos,
+                        //改成尾巴根部冒烟,感觉更有味道(?)
+                        (bombHolder.graphicsModule as PlayerGraphics).tail[(bombHolder.graphicsModule as PlayerGraphics).tail.Length - 1].pos,
                         Custom.RNV(),
                         smokeColor,
                         (int)Custom.LerpMap(bombTimer, 20 * 40, 0, 25f, 40f));
@@ -453,7 +455,7 @@ namespace Meadow_MiniGame_HotPotato
                 nextBombTimer = initialBombTimer;
                 bombTimer = nextBombTimer;
                 bombHolder = eligiblePlayers[randomIndex];
-                
+
                 // 同步到其他玩家
                 foreach (var player in OnlineManager.players)
                 {
