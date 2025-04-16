@@ -45,7 +45,7 @@ namespace MiniGameHotPotato
 
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
                 On.Player.Collide += Player_Collide;
-                // On.HUD.HUD.InitSinglePlayerHud += HUD_InitSinglePlayerHud;
+
                 fullyInit = true;
             }
             catch (Exception e)
@@ -60,45 +60,38 @@ namespace MiniGameHotPotato
             orig(self, otherObject, myChunk, otherChunk);
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
-                // 确保碰撞的是另一个玩家
-                if (self.Consious&&otherObject is Player otherPlayer && otherPlayer != self)
+                //只让主机处理防止反复传递
+                if (OnlineManager.lobby.isOwner)
                 {
-                    // 检查自己是否是炸弹持有者
-                    if (OnlinePhysicalObject.map.TryGetValue(self.abstractCreature, out var myOnlineObject) &&
-                        myOnlineObject.owner == potatoArena.potatoData.bombHolder)
+                    // 确保碰撞的是另一个玩家
+                    if (self.Consious && otherObject is Player otherPlayer && otherPlayer != self)
                     {
-                        // 获取另一个玩家的OnlinePlayer实例
-                        if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject))
+                        // 检查自己是否是炸弹持有者
+                        if (OnlinePhysicalObject.map.TryGetValue(self.abstractCreature, out var myOnlineObject) &&
+                            myOnlineObject.owner == HotPotatoArena.bombHolder)
                         {
-                            // 确保两个玩家都活着
-                            if (self.Consious)
+                            // 获取另一个玩家的OnlinePlayer实例
+                            if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject))
                             {
-                                // 传递炸弹给新玩家
-                                foreach (var player in OnlineManager.players)
+                                // 确保两个玩家都活着
+                                if (self.Consious)
                                 {
-                                    if (!player.isMe)
+                                    // 传递炸弹给新玩家
+                                    foreach (var player in OnlineManager.players)
                                     {
-                                        player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, otherOnlineObject.owner);
+                                        if (!player.isMe)
+                                        {
+                                            player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, otherOnlineObject.owner);
+                                        }
                                     }
+                                    HotPotatoArena.bombHolder = otherOnlineObject.owner;
                                 }
-                                potatoArena.potatoData.bombHolder = otherOnlineObject.owner;
                             }
                         }
                     }
                 }
             }
         }
-        private void HUD_InitSinglePlayerHud(On.HUD.HUD.orig_InitSinglePlayerHud orig, HUD.HUD self, RoomCamera cam)
-        {
-            orig(self, cam);
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena)
-            {
-                var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-
-                self.AddPart(new BombTImer(self, self.fContainers[0], potatoArena));
-            }
-        }
-
         private void MultiplayerMenu_ctor(On.Menu.MultiplayerMenu.orig_ctor orig, Menu.MultiplayerMenu self, ProcessManager manager)
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena))

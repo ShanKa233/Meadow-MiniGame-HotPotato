@@ -9,7 +9,7 @@ namespace Meadow_MiniGame_HotPotato
         [RainMeadow.RPCMethod]
         public static void SyncRemix(RPCEvent rpcEvent, int bombTimer, OnlinePlayer bombHolder, bool isGameOver)
         {
-            if(RainMeadow.RainMeadow.isArenaMode(out var arena))
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena))
             {
                 var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
                 // 确保bombTimer值有效
@@ -22,10 +22,10 @@ namespace Meadow_MiniGame_HotPotato
                 {
                     HotPotatoArena.bombTimer = bombTimer;
                 }
-                
-                potatoArena.potatoData.bombHolder = bombHolder;
+
+                HotPotatoArena.bombHolder = bombHolder;
                 potatoArena.IsGameOver = isGameOver;
-                
+
                 Debug.Log($"SyncRemix: bombTimer synchronized to {HotPotatoArena.bombTimer}");
             }
         }
@@ -37,42 +37,29 @@ namespace Meadow_MiniGame_HotPotato
             if (RainMeadow.RainMeadow.isArenaMode(out var arena))
             {
                 var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
-                if (game.manager.upcomingProcess != null)
-                {
-                    return;
-                }
                 var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-                Debug.Log($"Passing bomb to player: {newHolder.inLobbyId}");
-                
-                // 在传递炸弹时重置爆炸时间
-                if (OnlineManager.lobby.isOwner)
+                RainMeadow.RainMeadow.Debug($"Passing bomb to player: {newHolder.inLobbyId}");
+
+                HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
+                HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
+                HotPotatoArena.bombHolder = newHolder;
+
+                RainMeadow.RainMeadow.Debug($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
+
+                // 同步新的计时器状态给所有玩家
+                foreach (var player in OnlineManager.players)
                 {
-                    // 确保nextBombTimer值有效
-                    if (HotPotatoArena.bombTimer <= 0)
+                    if (player != null && !player.isMe)
                     {
-                        HotPotatoArena.nextBombTimer = HotPotatoArena.initialBombTimer;
-                    }
-                    
-                    HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
-                    HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
-                    Debug.Log($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
-                    
-                    // 同步新的计时器状态给所有玩家
-                    foreach (var player in OnlineManager.players)
-                    {
-                        if (player != null && !player.isMe)
-                        {
-                            player.InvokeOnceRPC(SyncRemix, HotPotatoArena.bombTimer, newHolder, potatoArena.IsGameOver);
-                        }
+                        player.InvokeOnceRPC(SyncRemix, HotPotatoArena.bombTimer, HotPotatoArena.bombHolder, potatoArena.IsGameOver);
                     }
                 }
-                
-                potatoArena.potatoData.bombHolder = newHolder;
+
 
                 // 给新的炸弹持有者添加晕眩效果
                 foreach (var abstractCreature in game.session.Players)
                 {
-                    if (abstractCreature != null && 
+                    if (abstractCreature != null &&
                         OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
                         onlineObject != null && onlineObject.owner == newHolder)
                     {
@@ -90,6 +77,31 @@ namespace Meadow_MiniGame_HotPotato
                 Debug.LogError("Failed to pass bomb: Invalid game mode or arena not found");
             }
         }
+        public static void PassBomb_Local(OnlinePlayer newHolder)
+        {
+
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena))
+            {
+                var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
+                var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
+
+                // 给新的炸弹持有者添加晕眩效果
+                foreach (var abstractCreature in game.session.Players)
+                {
+                    if (abstractCreature != null &&
+                        OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
+                        onlineObject != null && onlineObject.owner == newHolder)
+                    {
+                        var player = abstractCreature.realizedCreature as Player;
+                        if (player != null && player.room != null && player.playerState.alive)
+                        {
+                            player.Stun(60); // 晕眩60tick
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         // 添加炸弹爆炸的RPC方法
         [RainMeadow.RPCMethod]
@@ -103,7 +115,7 @@ namespace Meadow_MiniGame_HotPotato
                     return;
                 }
                 var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-                
+
                 // 找到对应的玩家并引爆
                 foreach (var abstractCreature in game.session.Players)
                 {
@@ -121,7 +133,7 @@ namespace Meadow_MiniGame_HotPotato
                             room.AddObject(new ShockWave(vector, 330f, 0.045f, 5));
                             room.AddObject(new Explosion(room, player, vector, 7, 250f, 30f, 1, 280f, 0f, player, 0.7f, 160f, 1f));
                             room.PlaySound(SoundID.Bomb_Explode, vector, player.abstractCreature);
-                            
+
                             for (int i = 0; i < 30; i++)
                             {
                                 room.AddObject(new APieceOfSlug(vector, (RWCustom.Custom.RNV() + Vector2.up * 2).normalized * 40f * Random.value + player.mainBodyChunk.vel, player));
