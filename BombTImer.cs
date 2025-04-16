@@ -1,15 +1,16 @@
 using RWCustom;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using RainMeadow;
 
 namespace Meadow_MiniGame_HotPotato
 {
     public class BombTImer : HUD.HudPart
     {
         private FLabel timerLabel;  // 显示时间的标签
-        private FLabel modeLabel;   // 显示模式的标签
         private Vector2 pos, lastPos;  // 标签的位置
-        public HotPotatoArena hpam;  // 游戏模式
+        private readonly HotPotatoArena gameMode;
+        private ArenaGameSession session;
         private Player? player;  // 当前玩家
         private float lastSoundTime;  // 上次播放声音的时间
         private float lastBeepValue;  // 上次计时的数值
@@ -20,14 +21,22 @@ namespace Meadow_MiniGame_HotPotato
         private float smoothCounter; // 平滑后的计时器值
 
         // 构造函数：初始化计时器
-        public BombTImer(HUD.HUD hud, FContainer fContainer, HotPotatoArena tgm) : base(hud)
+        public BombTImer(HUD.HUD hud, FContainer fContainer, HotPotatoArena gameMode) : base(hud)
         {
+            this.gameMode = gameMode;
+            var game = hud.owner as RainWorldGame;
+            if (game != null)
+            {
+                this.session = game.session as ArenaGameSession;
+            }
+            
             // 初始化时间标签
             timerLabel = new FLabel(Custom.GetFont(), FormatTime(0))
             {
                 scale = 2.4f,
                 alignment = FLabelAlignment.Center
             };
+            
             // 设置标签位置
             pos = new Vector2(hud.rainWorld.options.ScreenSize.x/2, hud.rainWorld.options.ScreenSize.y - 60f);
             lastPos = pos;
@@ -35,7 +44,6 @@ namespace Meadow_MiniGame_HotPotato
 
             // 将标签添加到容器中
             fContainer.AddChild(timerLabel);
-            this.hpam = tgm;
             
             // 初始化音效变量
             lastSoundTime = float.MaxValue;
@@ -90,8 +98,31 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (player != null && player.room != null)
             {
-                // 使用游戏中已有的声音ID
-                player.room.PlaySound(SoundID.Gate_Clamp_Lock, player.mainBodyChunk, false, 0.8f, 1f + Random.value * 0.2f);
+                // 获取炸弹持有者
+                Player bombHolder = null;
+                foreach (var abstractCreature in session.Players)
+                {
+                    if (abstractCreature == null) continue;
+
+                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
+                        onlineObject != null && onlineObject.owner == HotPotatoArena.bombHolder)
+                    {
+                        bombHolder = abstractCreature.realizedCreature as Player;
+                        break;
+                    }
+                }
+
+                // 如果找到炸弹持有者，从其位置播放声音
+                if (bombHolder != null && bombHolder.room != null)
+                {
+                    UnityEngine.Debug.Log("PlaySound");
+                    bombHolder.room.PlaySound(SoundID.Gate_Clamp_Lock, bombHolder.mainBodyChunk, false, 0.8f, 1f + Random.value * 0.2f);
+                }
+                else
+                {
+                    // 如果没有找到炸弹持有者，就从当前玩家位置播放声音
+                    player.room.PlaySound(SoundID.Gate_Clamp_Lock, player.mainBodyChunk, false, 0.8f, 1f + Random.value * 0.1f);
+                }
             }
         }
 
@@ -100,7 +131,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             base.Draw(timeStacker);
             
-            if (counter < 0)
+            if (counter < 0||gameMode.isCountingDown)
             {
                 timerLabel.isVisible = false;
                 return;
@@ -140,7 +171,7 @@ namespace Meadow_MiniGame_HotPotato
             // 计时器结束
             if (smoothCounter <= 0f && counter <= 0)
             {
-                timerLabel.text = "轰！";
+                // timerLabel.text = "轰！";
                 timerLabel.color = Color.red;
             }
         }

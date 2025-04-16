@@ -16,6 +16,10 @@ namespace Meadow_MiniGame_HotPotato
 
         public override int TimerDuration { get; set; }
 
+        // 添加倒计时相关变量防止太早在游戏中加载内容导致后面进入房间的玩家无法读取
+        public bool isCountingDown = true;  // 是否正在倒计时
+        private int countdownTimer = 3 * 40; // 3秒 * 40帧 = 120帧的倒计时
+        private const int COUNTDOWN_START = 3 * 40; // 倒计时初始值
 
         public static int bombTimer; // 炸弹爆炸计时器
         public static int nextBombTimer; // 下次重置后的炸弹时间
@@ -24,7 +28,7 @@ namespace Meadow_MiniGame_HotPotato
 
 
         public const int initialBombTimer = 30 * 40; // 初始炸弹爆炸时间
-        public const int minPlayersRequired = 2; // 最少需要的玩家数量
+        public const int minPlayersRequired = 1; // 最少需要的玩家数量
 
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
@@ -109,7 +113,7 @@ namespace Meadow_MiniGame_HotPotato
             }
             catch (System.Exception e)
             {
-               UnityEngine.Debug.LogError($"FireSmoke effect error: {e.Message}");
+                UnityEngine.Debug.LogError($"FireSmoke effect error: {e.Message}");
                 bombHolderSmoke?.Destroy();
                 bombHolderSmoke = null;
             }
@@ -142,13 +146,22 @@ namespace Meadow_MiniGame_HotPotato
             nextBombTimer = initialBombTimer;
             bombHolder = null;
 
+            // 初始化倒计时
+            isCountingDown = true;
+            countdownTimer = COUNTDOWN_START;
+
             IsGameOver = false;
         }
 
         public override void HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, HUD.HUD self, ArenaGameSession session)
         {
             //添加炸弹计时器,最重要
-            self.AddPart(new BombTImer(self, self.fContainers[0], this));
+            var gameHUD = new GameHUD(self, session.game.cameras[0], session);
+            self.AddPart(gameHUD);
+
+            // // 初始化HUD计时器
+            // gameHUD.ResetCounter(bombTimer);
+            // gameHUD.StartTimer();
 
             // 如果允许聊天，添加聊天HUD
             if (MatchmakingManager.currentInstance.canSendChatMessages)
@@ -161,6 +174,10 @@ namespace Meadow_MiniGame_HotPotato
         }
         public override string TimerText()
         {
+            // if (isCountingDown && countdownTimer > 0)
+            // {
+            //     return $"游戏将在 {(countdownTimer / 40) + 1} 秒后开始...";
+            // }
             return "";
         }
         public override bool SpawnBatflies(FliesWorldAI self, int spawnRoom)
@@ -185,11 +202,31 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
+            // 处理倒计时
+            if (isCountingDown)
+            {
+                if (countdownTimer > 0)
+                {
+                    countdownTimer--;
+                    return; // 倒计时期间不执行其他游戏逻辑
+                }
+                else
+                {
+                    isCountingDown = false;
+                }
+            }
+
+            if (ShouldGameEnd(session))
+            {
+                bombTimer = -1;
+                IsGameOver = true;
+                return;
+            }
             //如果当前是房主,则进行炸弹持有者选择
             if (OnlineManager.lobby.isOwner)
             {
                 // 检查当前是否有炸弹持有者
-                if (bombHolder == null || bombHolder.hasLeft)
+                if ((bombHolder == null || bombHolder.hasLeft) && (!ShouldGameEnd(session)))
                 {
                     RandomSelectBombHolder(session);
                 }
@@ -225,7 +262,7 @@ namespace Meadow_MiniGame_HotPotato
                     }
 
                     // 如果持有者无效，重置炸弹持有者
-                    if (!holderValid)
+                    if (!holderValid && !ShouldGameEnd(session))
                     {
                         bombHolder = null;
                         RandomSelectBombHolder(session);
@@ -240,22 +277,62 @@ namespace Meadow_MiniGame_HotPotato
                     // 如果有炸弹持有者，更新计时器
                     bombTimer--;
 
+                    // 同步显示倒计时到HUD
+                    if (session.game.cameras[0].hud != null)
+                    {
+                        var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
+                        if (gameHUD != null)
+                        {
+                            gameHUD.SyncCounter(bombTimer);
+                        }
+                    }
                 }
                 if (bombTimer <= 0)
                 {
+                    // 停止HUD计时器
+                    if (session.game.cameras[0].hud != null)
+                    {
+                        var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
+                        if (gameHUD != null)
+                        {
+                            gameHUD.StopTimer(true);
+                        }
+                    }
+
                     if (OnlineManager.lobby.isOwner)
                     {
                         BombExplosion(session);
+
+                        if (ShouldGameEnd(session))
+                        {
+                            bombTimer = -1;
+                            IsGameOver = true;
+
+                            foreach (var onlinePlayer in OnlineManager.players)
+                            {
+                                if (!onlinePlayer.isMe)
+                                {
+                                    onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, bombTimer, bombHolder, IsGameOver);
+                                }
+                            }
+
+                            return;
+                        }
                     }
                     // 检查爆炸后是否应该结束游戏
-                    if (ShouldGameEnd(session))
-                    {
-                        bombTimer = -1;
-                        IsGameOver = true;
-                        return;
-                    }
                     nextBombTimer = Custom.IntClamp(nextBombTimer % 40 - 5, 4, initialBombTimer) * 40;
                     bombTimer = nextBombTimer;
+
+                    // 重置HUD计时器
+                    if (session.game.cameras[0].hud != null)
+                    {
+                        var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
+                        if (gameHUD != null)
+                        {
+                            gameHUD.ResetCounter(bombTimer);
+                            gameHUD.StartTimer();
+                        }
+                    }
                 }
             }
             // 处理炸弹持有者特效
@@ -279,7 +356,7 @@ namespace Meadow_MiniGame_HotPotato
                         {
                             if (!onlinePlayer.isMe)
                             {
-                                onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.BombExplode, bombHolder);
+                                onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.ExplosionPlayer, bombHolder);
                             }
                         }
 
@@ -376,7 +453,7 @@ namespace Meadow_MiniGame_HotPotato
                 nextBombTimer = initialBombTimer;
                 bombTimer = nextBombTimer;
                 bombHolder = eligiblePlayers[randomIndex];
-
+                
                 // 同步到其他玩家
                 foreach (var player in OnlineManager.players)
                 {

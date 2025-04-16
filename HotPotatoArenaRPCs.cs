@@ -12,20 +12,13 @@ namespace Meadow_MiniGame_HotPotato
             if (RainMeadow.RainMeadow.isArenaMode(out var arena))
             {
                 var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-                // 确保bombTimer值有效
-                if (bombTimer <= 0)
-                {
-                    HotPotatoArena.bombTimer = HotPotatoArena.initialBombTimer;
-                    // Debug.LogWarning($"Received invalid bombTimer value: {bombTimer}, setting to default: {HotPotatoArena.initialBombTimer}");
-                }
-                else
-                {
-                    HotPotatoArena.bombTimer = bombTimer;
-                }
 
+                HotPotatoArena.bombTimer = bombTimer;
                 HotPotatoArena.bombHolder = bombHolder;
                 potatoArena.IsGameOver = isGameOver;
-
+                
+                //如果还在倒计时就提前结束倒计时
+                potatoArena.isCountingDown = false;
             }
         }
 
@@ -35,27 +28,8 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena))
             {
-                var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
-                var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-                // RainMeadow.RainMeadow.Debug($"Passing bomb to player: {newHolder.inLobbyId}");
-
-                HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
-                HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
-                HotPotatoArena.bombHolder = newHolder;
-
-                // RainMeadow.RainMeadow.Debug($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
-
-                // 同步新的计时器状态给所有玩家
-                foreach (var player in OnlineManager.players)
-                {
-                    if (player != null && !player.isMe)
-                    {
-                        player.InvokeOnceRPC(SyncRemix, HotPotatoArena.bombTimer, HotPotatoArena.bombHolder, potatoArena.IsGameOver);
-                    }
-                }
-
-
                 // 给新的炸弹持有者添加晕眩效果
+                var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
                 foreach (var abstractCreature in game.session.Players)
                 {
                     if (abstractCreature != null &&
@@ -104,7 +78,7 @@ namespace Meadow_MiniGame_HotPotato
 
         // 添加炸弹爆炸的RPC方法
         [RainMeadow.RPCMethod]
-        public static void BombExplode(OnlinePlayer bombHolder)
+        public static void ExplosionPlayer(OnlinePlayer bombHolder)
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena))
             {

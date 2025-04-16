@@ -2,6 +2,7 @@
 using IL;
 using Meadow_MiniGame_HotPotato;
 using RainMeadow;
+using RWCustom;
 using System;
 using System.Security.Permissions;
 using UnityEngine;
@@ -76,15 +77,21 @@ namespace MiniGameHotPotato
                                 // 确保两个玩家都活着
                                 if (self.Consious)
                                 {
+                                    HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
+                                    HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
+                                    HotPotatoArena.bombHolder = otherOnlineObject.owner;
                                     // 传递炸弹给新玩家
                                     foreach (var player in OnlineManager.players)
                                     {
                                         if (!player.isMe)
                                         {
+                                            // 同步新的计时器状态和新的炸弹持有者给所有玩家
                                             player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, otherOnlineObject.owner);
+                                            player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, HotPotatoArena.bombTimer, HotPotatoArena.bombHolder, potatoArena.IsGameOver);
                                         }
                                     }
-                                    HotPotatoArena.bombHolder = otherOnlineObject.owner;
+                                    //本地击晕防止反复触发
+                                    otherPlayer.Stun(60);
                                 }
                             }
                         }
