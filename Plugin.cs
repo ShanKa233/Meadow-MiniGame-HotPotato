@@ -71,7 +71,7 @@ namespace MiniGameHotPotato
                         if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject))
                         {
                             // 确保两个玩家都活着
-                            if (self.playerState.alive && otherPlayer.playerState.alive)
+                            if (self.Consious)
                             {
                                 // 传递炸弹给新玩家
                                 foreach (var player in OnlineManager.players)

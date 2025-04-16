@@ -1,4 +1,5 @@
 ﻿using RainMeadow;
+using RWCustom;
 using UnityEngine;
 
 namespace Meadow_MiniGame_HotPotato
@@ -52,6 +53,7 @@ namespace Meadow_MiniGame_HotPotato
                         HotPotatoArena.nextBombTimer = HotPotatoArena.initialBombTimer;
                     }
                     
+                    HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
                     HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
                     Debug.Log($"Reset bomb timer to: {HotPotatoArena.bombTimer}");
                     

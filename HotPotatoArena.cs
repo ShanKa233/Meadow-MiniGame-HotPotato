@@ -195,7 +195,10 @@ namespace Meadow_MiniGame_HotPotato
             }
 
             // 确保potatoData已初始化
-            potatoData = new PotatoData();
+            if (potatoData == null)
+            {
+                potatoData = new PotatoData();
+            }
 
 
             if (OnlineManager.lobby.isOwner)
@@ -219,25 +222,28 @@ namespace Meadow_MiniGame_HotPotato
                         }
                     }
                 }
-                else if(bombTimer >= 0)
+            }
+            if (potatoData?.bombHolder != null)
+            {
+                if (bombTimer >= 0)
                 {
                     // 如果有炸弹持有者，更新计时器
                     bombTimer--;
                     UnityEngine.Debug.Log($"bombTimer: {bombTimer}, Bomb Holder: {potatoData.bombHolder.inLobbyId}");
 
-                    if (bombTimer <= 0)
+                }
+                if (bombTimer <= 0)
+                {
+                    BombExplosion(session);
+                    // 检查爆炸后是否应该结束游戏
+                    if (ShouldGameEnd(session))
                     {
-                        BombExplosion(session);
-                        // 检查爆炸后是否应该结束游戏
-                        if (ShouldGameEnd(session))
-                        {
-                            IsGameOver = true;
-                            bombTimer = -1;
-                            return;
-                        }
-                        nextBombTimer = Custom.IntClamp(nextBombTimer % 40 - 5, 4, initialBombTimer) * 40;
-                        bombTimer = nextBombTimer;
+                        IsGameOver = true;
+                        bombTimer = -1;
+                        return;
                     }
+                    nextBombTimer = Custom.IntClamp(nextBombTimer % 40 - 5, 4, initialBombTimer) * 40;
+                    bombTimer = nextBombTimer;
                 }
             }
             // 处理炸弹持有者特效
