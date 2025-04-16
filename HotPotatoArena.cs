@@ -219,7 +219,7 @@ namespace Meadow_MiniGame_HotPotato
                         }
                     }
                 }
-                else
+                else if(bombTimer >= 0)
                 {
                     // 如果有炸弹持有者，更新计时器
                     bombTimer--;
