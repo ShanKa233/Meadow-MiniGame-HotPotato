@@ -23,35 +23,8 @@ namespace Meadow_MiniGame_HotPotato
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)
                         {
-                            player.Stun(60); // 晕眩60tick
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Debug.LogError("Failed to pass bomb: Invalid game mode or arena not found");
-            }
-        }
-        public static void PassBomb_Local(OnlinePlayer newHolder)
-        {
-
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena))
-            {
-                var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
-                var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-
-                // 给新的炸弹持有者添加晕眩效果
-                foreach (var abstractCreature in game.session.Players)
-                {
-                    if (abstractCreature != null &&
-                        OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                        onlineObject != null && onlineObject.owner == newHolder)
-                    {
-                        var player = abstractCreature.realizedCreature as Player;
-                        if (player != null && player.room != null && player.playerState.alive)
-                        {
+                            HotPotatoArena.bombData.bombHolderCache = player;
+                            HotPotatoArena.bombData.bombPassed = false;
                             player.Stun(60); // 晕眩60tick
                             break;
                         }
@@ -59,7 +32,6 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
         }
-
         // 添加炸弹爆炸的RPC方法
         [RainMeadow.RPCMethod]
         public static void ExplosionPlayer(OnlinePlayer bombHolder)
@@ -87,10 +59,6 @@ namespace Meadow_MiniGame_HotPotato
                         }
                     }
                 }
-            }
-            else
-            {
-                // Debug.LogError("Failed to explode bomb: Invalid game mode or arena not found");
             }
         }
     }

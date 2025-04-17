@@ -64,9 +64,9 @@ namespace Meadow_MiniGame_HotPotato
         {
             base.Update();
 
-            if (OnlineManager.lobby.TryGetData(typeof(BombGameData), out var data) && data is BombGameData bombData)
+            if (HotPotatoArena.bombData != null)
             {
-                SyncCounter(bombData.bombTimer);
+                SyncCounter(HotPotatoArena.bombData.bombTimer);
             }
             else
             {
@@ -159,14 +159,14 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             // 获取炸弹持有者
             Player bombHolder = null;
-            if (OnlineManager.lobby.TryGetData(typeof(BombGameData), out var data) && data is BombGameData bombData)
+            if (HotPotatoArena.bombData != null)
             {
                 foreach (var abstractCreature in session.Players)
                 {
                     if (abstractCreature == null) continue;
 
                     if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                        onlineObject != null && onlineObject.owner == bombData.bombHolder)
+                        onlineObject != null && onlineObject.owner == HotPotatoArena.bombData.bombHolder)
                     {
                         bombHolder = abstractCreature.realizedCreature as Player;
                         break;
@@ -198,9 +198,18 @@ namespace Meadow_MiniGame_HotPotato
         int InternalGetTickStep(int localCounter, int goalCounter)
         {
             if (localCounter > goalCounter)
-                return 2;
+            {
+                int diff = localCounter - goalCounter;
+                // 动态计算步进值：差值越大，步进越大
+                // 使用对数函数使得增长更平滑
+                int step = (int)Mathf.Ceil(Mathf.Log(diff + 1, 2));
+                return Mathf.Clamp(step, 2, 10); // 限制最小2，最大10
+            }
             else if (localCounter < goalCounter)
-                return 0;
+            {
+                // 如果本地时间小于目标时间（比如时间被重置），直接跳转
+                return goalCounter - localCounter;
+            }
             else
             {
                 synced = true;
@@ -326,8 +335,19 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (!reval)
                 StartTimer();
+            
             if (currentCounter == syncGoalCounter)
                 return;
+            
+            // 如果是时间重置（新时间大于当前时间）或者差值过大，直接同步
+            if (currentCounter > counter || Mathf.Abs(counter - currentCounter) > 200)
+            {
+                counter = currentCounter;
+                lastCounter = counter;
+                syncGoalCounter = currentCounter;
+                return;
+            }
+            
             synced = false;
             syncGoalCounter = currentCounter;
         }

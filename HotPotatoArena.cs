@@ -17,11 +17,10 @@ namespace Meadow_MiniGame_HotPotato
         public override int TimerDuration { get; set; }
 
         // 添加倒计时相关变量防止太早在游戏中加载内容导致后面进入房间的玩家无法读取
-        public bool isCountingDown = true;  // 是否正在倒计时
         private int countdownTimer = 3 * 40; // 3秒 * 40帧 = 120帧的倒计时
         private const int COUNTDOWN_START = 3 * 40; // 倒计时初始值
 
-        public BombGameData bombData;
+        public static BombGameData bombData;
 
         public const int minPlayersRequired = 2; // 最少需要的玩家数量
 
@@ -136,7 +135,6 @@ namespace Meadow_MiniGame_HotPotato
             self.saveCreatures = false;             // 不保存生物状态
 
             self.spearsHitPlayers = false;//禁止玩家用矛互相攻击
-            // self.evilAI = false;//禁止邪恶AI
         }
         public void InitGame()
         {
@@ -144,30 +142,19 @@ namespace Meadow_MiniGame_HotPotato
             bombData.bombTimer = bombData.nextBombTimer;
             bombData.bombHolder = null;
 
-            // 初始化游戏开始前的倒计时
-            isCountingDown = true;
-            countdownTimer = COUNTDOWN_START;
-
+            //用于刷新缓存的炸弹持有者
+            bombData.bombPassed = false;
+            bombData.bombHolderCache = null;
+            // 重置游戏状态
             bombData.gameStarted = false;
             bombData.gameOver = false;
         }
-
-        public override void HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, HUD.HUD self, ArenaGameSession session)
+        public void ResetCountdown()
         {
-            //添加炸弹计时器,最重要
-            var gameHUD = new GameHUD(self, session.game.cameras[0], session);
-            self.AddPart(gameHUD);
-
-
-            // 如果允许聊天，添加聊天HUD
-            // if (MatchmakingManager.currentInstance.canSendChatMessages)
-            //     self.AddPart(new ChatHud(self, session.game.cameras[0]));
-
-            // // 添加观战HUD    
-            // self.AddPart(new SpectatorHud(self, session.game.cameras[0]));
-            // // 添加在线状态HUD
-            // self.AddPart(new OnlineHUD(self, session.game.cameras[0], arena));
+            // 重置倒计时到初始值
+            countdownTimer = COUNTDOWN_START;
         }
+
         public override string TimerText()
         {
             return "";
@@ -176,17 +163,132 @@ namespace Meadow_MiniGame_HotPotato
         {
             return false;
         }
+
         public override void ArenaSessionCtor(ArenaOnlineGameMode arena, On.ArenaGameSession.orig_ctor orig, ArenaGameSession self, RainWorldGame game)
         {
             base.ArenaSessionCtor(arena, orig, self, game);
-
-            // bombData = OnlineManager.lobby.AddData(new BombGameData());
             if (OnlineManager.lobby.isOwner)
             {
                 //初始化游戏计时器呀之类的
                 InitGame();
+                ResetCountdown();
             }
         }
+        public override void HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, HUD.HUD self, ArenaGameSession session)
+        {
+            //添加炸弹计时器,最重要
+            //包括音效的部分都是这里处理的
+            var gameHUD = new GameHUD(self, session.game.cameras[0], session);
+            self.AddPart(gameHUD);
+        }
+
+        public override void ArenaSessionNextLevel(ArenaOnlineGameMode arena, On.ArenaSitting.orig_NextLevel orig, ArenaSitting self, ProcessManager process)
+        {
+            base.ArenaSessionNextLevel(arena, orig, self, process);
+        }
+        //检查缓存是否有效
+        private bool IsValidCache()
+        {
+            if (bombData.bombHolderCache == null) return false;
+
+            try
+            {
+                // 检查缓存的玩家是否仍然是当前的炸弹持有者
+                if (OnlinePhysicalObject.map.TryGetValue(bombData.bombHolderCache.abstractCreature, out var onlineObject) &&
+                    onlineObject != null && onlineObject.owner == bombData.bombHolder)
+                {
+                    // 检查玩家状态是否有效
+                    return bombData.bombHolderCache.playerState.alive &&
+                           (bombData.bombHolderCache.inShortcut || bombData.bombHolderCache.room != null);
+                }
+            }
+            catch (System.Exception e)
+            {
+                UnityEngine.Debug.LogError($"检查缓存玩家错误: {e.Message}");
+            }
+
+            return false;
+        }
+        //更新缓存的炸弹持有者
+        private void UpdateBombHolderCache(ArenaGameSession session)
+        {
+            if (session == null) return;
+            if (!NeedResetBombHolderCache()) return;
+
+            // 如果已有缓存的玩家，先检查它是否仍然是当前的炸弹持有者
+            if (IsValidCache())
+            {
+                bombData.bombPassed = false;
+                return;
+            }
+
+            // 如果缓存无效或检查失败，再遍历所有玩家
+            foreach (var abstractCreature in session.Players)
+            {
+                if (abstractCreature == null) continue;
+
+                try
+                {
+                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
+                        onlineObject != null && onlineObject.owner == bombData.bombHolder)
+                    {
+                        var player = abstractCreature.realizedCreature as Player;
+                        if (player != null && player.playerState.alive)
+                        {
+                            bombData.bombHolderCache = player;
+                            bombData.bombPassed = false;
+                            break;
+                        }
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    UnityEngine.Debug.LogError($"UpdateBombHolderCache error: {e.Message}");
+                    continue;
+                }
+            }
+        }
+
+        //检查炸弹持有者是否有效
+        private bool IsHolderValid(ArenaGameSession session)
+        {
+            // 先检查缓存是否有效
+            if (IsValidCache())
+            {
+                return true;
+            }
+
+            // 如果缓存无效，检查当前炸弹持有者
+            foreach (var abstractCreature in session.Players)
+            {
+                if (abstractCreature == null) continue;
+
+                try
+                {
+                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
+                        onlineObject != null && onlineObject.owner == bombData.bombHolder)
+                    {
+                        var player = abstractCreature.realizedCreature as Player;
+                        if (player != null && player.playerState.alive)
+                        {
+                            if (player.inShortcut || player.room != null)
+                            {
+                                // 更新缓存
+                                bombData.bombHolderCache = player;
+                                return true;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    UnityEngine.Debug.LogError($"检查炸弹持有者错误: {e.Message}");
+                    continue;
+                }
+            }
+            return false;
+        }
+
         public override void ArenaSessionUpdate(ArenaOnlineGameMode arena, ArenaGameSession session)
         {
             //虽然原版的方法也没写啥,但是还是先调用一下base
@@ -199,7 +301,7 @@ namespace Meadow_MiniGame_HotPotato
             }
 
             // 处理游戏前的倒计时
-            if (bombData.gameStarted)
+            if (!bombData.gameStarted)
             {
                 if (countdownTimer > 0)
                 {
@@ -208,7 +310,12 @@ namespace Meadow_MiniGame_HotPotato
                 }
                 else
                 {
-                    bombData.gameStarted = true;
+                    if (OnlineManager.lobby.isOwner)
+                    {
+                        InitGame();
+                        bombData.gameStarted = true;
+                    }
+                    ResetCountdown();
                 }
             }
 
@@ -220,6 +327,7 @@ namespace Meadow_MiniGame_HotPotato
                 }
                 return;
             }
+
             //如果当前是房主,则进行炸弹持有者选择
             if (OnlineManager.lobby.isOwner)
             {
@@ -230,37 +338,8 @@ namespace Meadow_MiniGame_HotPotato
                 }
                 else
                 {
-                    // 检查炸弹持有者是否仍然有效
-                    bool holderValid = false;
-                    foreach (var abstractCreature in session.Players)
-                    {
-                        if (abstractCreature == null) continue;
-
-                        try
-                        {
-                            if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                                onlineObject != null && onlineObject.owner == bombData.bombHolder)
-                            {
-                                var player = abstractCreature.realizedCreature as Player;
-                                if (player != null && player.playerState.alive)
-                                {
-                                    if (player.inShortcut || player.room != null)
-                                    {
-                                        holderValid = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        catch (System.Exception e)
-                        {
-                            UnityEngine.Debug.LogError($"炸弹持有者检查错误: {e.Message}");
-                            continue;
-                        }
-                    }
-
-                    // 如果持有者无效，重置炸弹持有者
-                    if (!holderValid && !ShouldGameEnd(session))
+                    // 使用新的方法检查炸弹持有者是否有效
+                    if (!IsHolderValid(session) && !ShouldGameEnd(session))
                     {
                         bombData.bombHolder = null;
                         RandomSelectBombHolder(session);
@@ -293,6 +372,9 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
 
+            // 更新炸弹持有者缓存
+            UpdateBombHolderCache(session);
+
             if (bombData.bombTimer > 0)
             {
                 // 同步显示倒计时到HUD
@@ -308,10 +390,12 @@ namespace Meadow_MiniGame_HotPotato
             // 处理炸弹持有者特效
             UpdateBombHolderEffects(session);
         }
+
+        //触发炸弹爆炸,在此方法内同步爆炸效果到其他玩家
         public void BombExplosion(ArenaGameSession session)
         {
             if (bombData.bombHolder == null) return;
-            if (!OnlineManager.lobby.isOwner) return;
+            if (!OnlineManager.lobby.isOwner) return;//只让房主处理爆炸
             // 本地处理爆炸
             // 获取炸弹持有者的Player实例
             foreach (var abstractCreature in session.Players)
@@ -335,7 +419,24 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
         }
+        //检查需不需要刷新缓存的炸弹持有者
+        public bool NeedResetBombHolderCache()
+        {
+            // 基础检查
+            if (bombData == null) return false;
+            if (bombData.gameOver) return false;
 
+            // 需要重置的情况：
+            return bombData.bombPassed || // 炸弹被传递
+                   bombData.bombHolderCache == null || // 缓存为空
+                   bombData.bombHolder == null || // 没有当前持有者
+                   (bombData.bombHolderCache != null && // 缓存的玩家已死亡或不在游戏中
+                    (!bombData.bombHolderCache.playerState.alive ||
+                     bombData.bombHolderCache.room == null)) ||
+                   !IsValidCache(); // 额外检查缓存是否有效
+        }
+
+        //本地显示爆炸效果
         public void ExplosionPlayer_Local(Player player)
         {
             var room = player.room;
@@ -353,6 +454,8 @@ namespace Meadow_MiniGame_HotPotato
             }
             player.Die();
             player.Destroy();
+
+            bombData.bombHolderCache = null;
         }
 
         // 获取存活玩家数量
@@ -386,7 +489,7 @@ namespace Meadow_MiniGame_HotPotato
             if (session == null || session.Players == null || !OnlineManager.lobby.isOwner)
                 return;
 
-            List<OnlinePlayer> eligiblePlayers = new List<OnlinePlayer>();
+            List<(OnlinePlayer onlinePlayer, Player player)> eligiblePlayers = new List<(OnlinePlayer, Player)>();
 
             // 查找所有存活的玩家
             foreach (var abstractCreature in session.Players)
@@ -403,7 +506,7 @@ namespace Meadow_MiniGame_HotPotato
                         {
                             if (player.inShortcut || player.room != null)
                             {
-                                eligiblePlayers.Add(onlineObject.owner);
+                                eligiblePlayers.Add((onlineObject.owner, player));
                             }
                         }
                     }
@@ -421,19 +524,9 @@ namespace Meadow_MiniGame_HotPotato
                 int randomIndex = UnityEngine.Random.Range(0, eligiblePlayers.Count);
                 bombData.nextBombTimer = bombData.initialBombTimer;
                 bombData.bombTimer = bombData.nextBombTimer;
-                bombData.bombHolder = eligiblePlayers[randomIndex];
-
-                // // 同步到其他玩家
-                // foreach (var player in OnlineManager.players)
-                // {
-                //     if (player != null && !player.isMe)
-                //     {
-                //         player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, bombData.bombTimer, bombData.bombHolder, IsGameOver);
-                //     }
-                // }
-
+                bombData.bombHolder = eligiblePlayers[randomIndex].onlinePlayer;
+                bombData.bombHolderCache = eligiblePlayers[randomIndex].player; // 直接缓存Player实例
             }
-
         }
     }
 }

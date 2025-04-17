@@ -59,7 +59,7 @@ namespace MiniGameHotPotato
 
         private void OnlineResource_OnAvailable(OnlineResource resource)
         {
-            resource.AddData(new BombGameData());
+            HotPotatoArena.bombData = resource.AddData(new BombGameData()); 
         }
 
         private void Player_Collide(On.Player.orig_Collide orig, Player self, PhysicalObject otherObject, int myChunk, int otherChunk)
@@ -68,32 +68,33 @@ namespace MiniGameHotPotato
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
                 //只让主机处理防止反复传递
-                if (OnlineManager.lobby.isOwner && OnlineManager.lobby.TryGetData(typeof(BombGameData), out var data) && data is BombGameData bombData)
+                if (OnlineManager.lobby.isOwner)
                 {
                     // 确保碰撞的是另一个玩家
-                    if (self.Consious && otherObject is Player otherPlayer && otherPlayer != self)
+                    if (self.Consious&&self.stun <=2 && otherObject is Player otherPlayer && otherPlayer != self)
                     {
                         // 检查自己是否是炸弹持有者
                         if (OnlinePhysicalObject.map.TryGetValue(self.abstractCreature, out var myOnlineObject) &&
-                            myOnlineObject.owner == bombData.bombHolder)
+                            myOnlineObject.owner == HotPotatoArena.bombData.bombHolder)
                         {
                             // 获取另一个玩家的OnlinePlayer实例
                             if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject))
                             {
                                 // 确保两个玩家都活着
-                                bombData.nextBombTimer = Custom.IntClamp(bombData.nextBombTimer % 40 - 5, 4, bombData.initialBombTimer) * 40;
-                                bombData.bombTimer = bombData.nextBombTimer;
-                                bombData.bombHolder = otherOnlineObject.owner;
-                                //本地击晕防止反复触发
+                                HotPotatoArena.bombData.nextBombTimer = Custom.IntClamp(HotPotatoArena.bombData.nextBombTimer / 40 - 5, 4, 30) * 40;
+                                HotPotatoArena.bombData.bombTimer = HotPotatoArena.bombData.nextBombTimer;
+                                HotPotatoArena.bombData.bombHolder = otherOnlineObject.owner;
+
+                                //刷新缓存
+                                HotPotatoArena.bombData.bombHolder = otherOnlineObject.owner;
+                                // 击晕防止反复触发
                                 otherPlayer.Stun(60);
                                 // 传递炸弹给新玩家
                                 foreach (var player in OnlineManager.players)
                                 {
                                     if (!player.isMe)
-                                    {
-                                        // 同步新的计时器状态和新的炸弹持有者给所有玩家
+                                    {//同步让炸弹晕厥
                                         player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, otherOnlineObject.owner);
-                                        // player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, HotPotatoArena.bombTimer, HotPotatoArena.bombHolder, potatoArena.IsGameOver);
                                     }
                                 }
                             }
