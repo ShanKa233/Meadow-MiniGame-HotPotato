@@ -10,7 +10,7 @@ namespace Meadow_MiniGame_HotPotato
 
         public int bombTimer = 30 * 40;//炸弹时间
         public int nextBombTimer = 30 * 40;//下次重置后的炸弹时间
-        public int initialBombTimer = 30 * 40;//初始炸弹时间
+        internal int initialBombTimer = 30 * 40;//初始炸弹时间
 
         //开始先倒计时3秒,倒计时结束后开始游戏
         public bool gameStarted = false;
@@ -26,26 +26,26 @@ namespace Meadow_MiniGame_HotPotato
 
         public class GameState : ResourceDataState
         {
-            [OnlineField(nullable = true)]
-            public OnlinePlayer bombHolder;
+            // [OnlineField(nullable = true)]
+            // public OnlinePlayer bombHolder;
 
-            [OnlineField]
-            public int bombTimer;
-            [OnlineField]
-            public int nextBombTimer;
-            [OnlineField]
-            public bool gameStarted;
-            [OnlineField]
-            public bool gameOver;
+            // [OnlineField]
+            // public int bombTimer;
+            // [OnlineField]
+            // public int nextBombTimer;
+            // [OnlineField]
+            // public bool gameStarted;
+            // [OnlineField]
+            // public bool gameOver;
             public GameState(BombGameData bombData)
             {
-                bombHolder = bombData.bombHolder;
+                // bombHolder = bombData.bombHolder;
 
-                bombTimer = bombData.bombTimer;
-                nextBombTimer = bombData.nextBombTimer;
+                // bombTimer = bombData.bombTimer;
+                // nextBombTimer = bombData.nextBombTimer;
 
-                gameStarted = bombData.gameStarted;
-                gameOver = bombData.gameOver;
+                // gameStarted = bombData.gameStarted;
+                // gameOver = bombData.gameOver;
             }
 
 
@@ -55,11 +55,11 @@ namespace Meadow_MiniGame_HotPotato
             {
                 BombGameData bombData = (BombGameData)data;
 
-                bombData.bombHolder = bombHolder;
-                bombData.bombTimer = bombTimer;
-                bombData.nextBombTimer = nextBombTimer;
-                bombData.gameStarted = gameStarted;
-                bombData.gameOver = gameOver;
+                // bombData.bombHolder = bombHolder;
+                // bombData.bombTimer = bombTimer;
+                // bombData.nextBombTimer = nextBombTimer;
+                // bombData.gameStarted = gameStarted;
+                // bombData.gameOver = gameOver;
             }
         }
     }

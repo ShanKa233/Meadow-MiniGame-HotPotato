@@ -43,10 +43,11 @@ namespace MiniGameHotPotato
                 // 设置游戏模式
                 // 打算先做一个竞技场的版本先试试看, 如果可以的话再做大厅的版本
                 // RainMeadow.OnlineGameMode.RegisterType(hotPotatoGameMode, typeof(HotPotatoGameMode), "Hot Potato!");
+                OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
                 On.Player.Collide += Player_Collide;
-
+                
                 fullyInit = true;
             }
             catch (Exception e)
@@ -54,6 +55,11 @@ namespace MiniGameHotPotato
                 Logger.LogError(e);
                 fullyInit = false;
             }
+        }
+
+        private void OnlineResource_OnAvailable(OnlineResource resource)
+        {
+            resource.AddData(new BombGameData());
         }
 
         private void Player_Collide(On.Player.orig_Collide orig, Player self, PhysicalObject otherObject, int myChunk, int otherChunk)

@@ -180,7 +180,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             base.ArenaSessionCtor(arena, orig, self, game);
 
-            bombData = OnlineManager.lobby.AddData(new BombGameData());
+            // bombData = OnlineManager.lobby.AddData(new BombGameData());
             if (OnlineManager.lobby.isOwner)
             {
                 //初始化游戏计时器呀之类的
