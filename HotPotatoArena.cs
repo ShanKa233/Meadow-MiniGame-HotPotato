@@ -11,7 +11,7 @@ namespace Meadow_MiniGame_HotPotato
 {
     public class HotPotatoArena : ExternalArenaGameMode
     {
-        public static string arenaName = "HotPotatoArena";
+        public static string arenaName = "Hot Potato";
         public static ArenaSetup.GameTypeID PotatoArena = new ArenaSetup.GameTypeID(arenaName, register: false); // dont register so we dont add to local arena
 
         public override int TimerDuration { get; set; }
@@ -49,7 +49,7 @@ namespace Meadow_MiniGame_HotPotato
 
             // 使用缓存获取持有者实例
             Player bombHolder = bombData.bombHolderCache;
-            
+
             // 如果缓存无效，尝试更新缓存
             if (bombHolder == null || !bombHolder.playerState.alive || bombHolder.room == null)
             {
@@ -119,6 +119,17 @@ namespace Meadow_MiniGame_HotPotato
 
             self.spearsHitPlayers = false;//禁止玩家用矛互相攻击
         }
+        public override string AddCustomIcon(ArenaOnlineGameMode arena, PlayerSpecificOnlineHud hud)
+        {
+            if (hud.clientSettings.owner == OnlineManager.mePlayer)
+            {
+                return "Symbol_StunBomb";
+            }
+            else
+            {
+                return base.AddCustomIcon(arena, hud);
+            }
+        }
         public void InitGame()
         {
             bombData.nextBombTimer = bombData.initialBombTimer;
@@ -161,14 +172,128 @@ namespace Meadow_MiniGame_HotPotato
         {
             //添加炸弹计时器,最重要
             //包括音效的部分都是这里处理的
-            var gameHUD = new GameHUD(self, session.game.cameras[0], session);
+            var gameHUD = new GameHUD(self, session.game.cameras[0]);
             self.AddPart(gameHUD);
+            //添加文字提示一般用于显示左下角地图名和音乐
+            self.AddPart(new HUD.TextPrompt(self));
+            // 如果允许聊天，添加聊天HUD
+            if (MatchmakingManager.currentInstance.canSendChatMessages)
+                self.AddPart(new ChatHud(self, session.game.cameras[0]));
+            // 添加观战HUD    
+            //观战HUD感觉没啥用
+            self.AddPart(new SpectatorHud(self, session.game.cameras[0]));
+            // 添加在线状态HUD
+            self.AddPart(new OnlineHUD(self, session.game.cameras[0], arena));
         }
 
         public override void ArenaSessionNextLevel(ArenaOnlineGameMode arena, On.ArenaSitting.orig_NextLevel orig, ArenaSitting self, ProcessManager process)
         {
             base.ArenaSessionNextLevel(arena, orig, self, process);
         }
+        // 处理游戏更新
+        public override void ArenaSessionUpdate(ArenaOnlineGameMode arena, ArenaGameSession session)
+        {
+            //虽然原版的方法也没写啥,但是还是先调用一下base
+            base.ArenaSessionUpdate(arena, session);
+
+            // 安全检查
+            if (session == null || arena == null)
+            {
+                return;
+            }
+
+            // 处理游戏前的倒计时
+            if (!bombData.gameStarted)
+            {
+                if (countdownTimer > 0)
+                {
+                    countdownTimer--;
+                    return; // 倒计时期间不执行其他游戏逻辑
+                }
+                else
+                {
+                    if (OnlineManager.lobby.isOwner)
+                    {
+                        InitGame();
+                        bombData.gameStarted = true;
+                    }
+                    ResetCountdown();
+                }
+            }
+
+            if (ShouldGameEnd(session))
+            {
+                if (OnlineManager.lobby.isOwner)
+                {
+                    bombData.gameOver = true;
+                }
+                return;
+            }
+
+            //如果当前是房主,则进行炸弹持有者选择
+            if (OnlineManager.lobby.isOwner)
+            {
+                // 检查当前是否有炸弹持有者
+                if ((bombData.bombHolder == null || bombData.bombHolder.hasLeft) && (!ShouldGameEnd(session)))
+                {
+                    RandomSelectBombHolder(session);
+                }
+                else
+                {
+                    // 使用新的方法检查炸弹持有者是否有效
+                    if (!IsHolderValid(session) && !ShouldGameEnd(session))
+                    {
+                        bombData.bombHolder = null;
+                        RandomSelectBombHolder(session);
+                    }
+                }
+                //炸弹计时器
+                if (bombData.bombHolder != null)
+                {
+                    if (bombData.bombTimer > 0)
+                    {
+                        // 如果有炸弹持有者，更新计时器
+                        bombData.bombTimer--;
+                    }
+                    if (bombData.bombTimer <= 0)
+                    {
+                        BombExplosion(session);
+
+                        if (ShouldGameEnd(session))
+                        {
+                            bombData.bombTimer = -1;
+                            bombData.gameOver = true;
+                        }
+                        else
+                        {
+                            //如果不该结束重新分配爆炸时间
+                            bombData.nextBombTimer = Custom.IntClamp(bombData.nextBombTimer % 40 - 5, 4, bombData.initialBombTimer) * 40;
+                            bombData.bombTimer = bombData.nextBombTimer;
+                        }
+                    }
+                }
+            }
+
+            // 更新炸弹持有者缓存
+            UpdateBombHolderCache(session);
+
+            if (bombData.bombTimer > 0)
+            {
+                // 同步显示倒计时到HUD
+                if (session.game.cameras[0].hud != null)
+                {
+                    var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
+                    if (gameHUD != null)
+                    {
+                        gameHUD.SyncCounter(bombData.bombTimer);
+                    }
+                }
+            }
+            // 处理炸弹持有者特效
+            UpdateBombHolderEffects(session);
+        }
+
+
         //检查缓存是否有效
         private bool IsValidCache()
         {
@@ -270,108 +395,6 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
             return false;
-        }
-
-        public override void ArenaSessionUpdate(ArenaOnlineGameMode arena, ArenaGameSession session)
-        {
-            //虽然原版的方法也没写啥,但是还是先调用一下base
-            base.ArenaSessionUpdate(arena, session);
-
-            // 安全检查
-            if (session == null || arena == null)
-            {
-                return;
-            }
-
-            // 处理游戏前的倒计时
-            if (!bombData.gameStarted)
-            {
-                if (countdownTimer > 0)
-                {
-                    countdownTimer--;
-                    return; // 倒计时期间不执行其他游戏逻辑
-                }
-                else
-                {
-                    if (OnlineManager.lobby.isOwner)
-                    {
-                        InitGame();
-                        bombData.gameStarted = true;
-                    }
-                    ResetCountdown();
-                }
-            }
-
-            if (ShouldGameEnd(session))
-            {
-                if (OnlineManager.lobby.isOwner)
-                {
-                    bombData.gameOver = true;
-                }
-                return;
-            }
-
-            //如果当前是房主,则进行炸弹持有者选择
-            if (OnlineManager.lobby.isOwner)
-            {
-                // 检查当前是否有炸弹持有者
-                if ((bombData.bombHolder == null || bombData.bombHolder.hasLeft) && (!ShouldGameEnd(session)))
-                {
-                    RandomSelectBombHolder(session);
-                }
-                else
-                {
-                    // 使用新的方法检查炸弹持有者是否有效
-                    if (!IsHolderValid(session) && !ShouldGameEnd(session))
-                    {
-                        bombData.bombHolder = null;
-                        RandomSelectBombHolder(session);
-                    }
-                }
-                //炸弹计时器
-                if (bombData.bombHolder != null)
-                {
-                    if (bombData.bombTimer > 0)
-                    {
-                        // 如果有炸弹持有者，更新计时器
-                        bombData.bombTimer--;
-                    }
-                    if (bombData.bombTimer <= 0)
-                    {
-                        BombExplosion(session);
-
-                        if (ShouldGameEnd(session))
-                        {
-                            bombData.bombTimer = -1;
-                            bombData.gameOver = true;
-                        }
-                        else
-                        {
-                            //如果不该结束重新分配爆炸时间
-                            bombData.nextBombTimer = Custom.IntClamp(bombData.nextBombTimer % 40 - 5, 4, bombData.initialBombTimer) * 40;
-                            bombData.bombTimer = bombData.nextBombTimer;
-                        }
-                    }
-                }
-            }
-
-            // 更新炸弹持有者缓存
-            UpdateBombHolderCache(session);
-
-            if (bombData.bombTimer > 0)
-            {
-                // 同步显示倒计时到HUD
-                if (session.game.cameras[0].hud != null)
-                {
-                    var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
-                    if (gameHUD != null)
-                    {
-                        gameHUD.SyncCounter(bombData.bombTimer);
-                    }
-                }
-            }
-            // 处理炸弹持有者特效
-            UpdateBombHolderEffects(session);
         }
 
         //触发炸弹爆炸,在此方法内同步爆炸效果到其他玩家

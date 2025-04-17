@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MiniGameHotPotato")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4111ac1671b6573c2e1c50a154962f0791e508aa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4bcf87e6044dc9c28623f7c98fbd23061b40ce1e")]
 [assembly: System.Reflection.AssemblyProductAttribute("MiniGameHotPotato")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MiniGameHotPotato")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

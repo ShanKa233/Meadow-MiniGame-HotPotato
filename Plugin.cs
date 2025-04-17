@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using IL;
 using Meadow_MiniGame_HotPotato;
+using MoreSlugcats;
 using RainMeadow;
 using RWCustom;
 using System;
@@ -43,9 +44,11 @@ namespace MiniGameHotPotato
                 // 设置游戏模式
                 // 打算先做一个竞技场的版本先试试看, 如果可以的话再做大厅的版本
                 // RainMeadow.OnlineGameMode.RegisterType(hotPotatoGameMode, typeof(HotPotatoGameMode), "Hot Potato!");
+
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
+                //处理传递炸弹的碰撞事件
                 On.Player.Collide += Player_Collide;
 
                 fullyInit = true;
@@ -88,6 +91,9 @@ namespace MiniGameHotPotato
                                     HotPotatoArena.bombData.bombTimer = HotPotatoArena.bombData.nextBombTimer;
                                     HotPotatoArena.bombData.bombHolder = otherOnlineObject.owner;
                                     HotPotatoArena.bombData.bombHolderCache = otherPlayer; // 直接更新缓存
+                                    
+                                    // 传递炸弹的音效
+                                    otherPlayer.room.PlaySound(SoundID.MENU_Add_Level,otherPlayer.firstChunk,false,1,2);
                                     // 击晕新持有者防止反复触发
                                     otherPlayer.Stun(60);
 

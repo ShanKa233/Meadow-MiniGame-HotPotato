@@ -12,7 +12,6 @@ namespace Meadow_MiniGame_HotPotato
     {
         static readonly float textRectSize = 25f;
         RoomCamera cam;
-        private ArenaGameSession session;
 
         FLabel digiTen_1;//1=smaller
         FLabel digiTen_2;//2=bigger
@@ -36,10 +35,9 @@ namespace Meadow_MiniGame_HotPotato
         float alpha;
         float lastSoundIndex;
 
-        public GameHUD(HUD.HUD hud, RoomCamera roomCamera, ArenaGameSession session) : base(hud)
+        public GameHUD(HUD.HUD hud, RoomCamera roomCamera) : base(hud)
         {
             cam = roomCamera;
-            this.session = session;
 
             counter = 40 * 30;
             lastCounter = counter;

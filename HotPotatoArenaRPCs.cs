@@ -25,6 +25,8 @@ namespace Meadow_MiniGame_HotPotato
                         {
                             HotPotatoArena.bombData.bombHolderCache = player;
                             HotPotatoArena.bombData.bombPassed = false;
+
+                            player.room.PlaySound(SoundID.MENU_Add_Level, player.firstChunk, false, 1, 2);
                             player.Stun(60); // 晕眩60tick
                             break;
                         }
