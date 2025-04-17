@@ -21,17 +21,13 @@ namespace Meadow_MiniGame_HotPotato
         private int countdownTimer = 3 * 40; // 3秒 * 40帧 = 120帧的倒计时
         private const int COUNTDOWN_START = 3 * 40; // 倒计时初始值
 
-        public static int bombTimer; // 炸弹爆炸计时器
-        public static int nextBombTimer; // 下次重置后的炸弹时间
-        public static OnlinePlayer bombHolder = null; // 炸弹持有者
-        public bool IsGameOver { get; set; } = false; // 游戏是否结束
+        public BombGameData bombData;
 
-
-        public const int initialBombTimer = 30 * 40; // 初始炸弹爆炸时间
         public const int minPlayersRequired = 2; // 最少需要的玩家数量
 
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
+
 
         // 处理炸弹持有者特效
         private void UpdateBombHolderEffects(ArenaGameSession session)
@@ -44,7 +40,7 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
-            if (HotPotatoArena.bombHolder == null)
+            if (bombData.bombHolder == null)
             {
                 // 如果没有炸弹持有者，销毁特效
                 bombHolderSmoke?.Destroy();
@@ -61,7 +57,7 @@ namespace Meadow_MiniGame_HotPotato
                 try
                 {
                     if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                        onlineObject != null && onlineObject.owner == HotPotatoArena.bombHolder)
+                        onlineObject != null && onlineObject.owner == bombData.bombHolder)
                     {
                         bombHolder = abstractCreature.realizedCreature as Player;
                         break;
@@ -91,7 +87,7 @@ namespace Meadow_MiniGame_HotPotato
 
                     // 根据剩余时间改变颜色
                     Color smokeColor = Custom.HSL2RGB(
-                        Custom.LerpMap(bombTimer, 20 * 40, 0, 144, 0) / 360f,
+                        Custom.LerpMap(bombData.bombTimer, 20 * 40, 0, 144, 0) / 360f,
                         1f,
                         0.5f);
 
@@ -102,7 +98,7 @@ namespace Meadow_MiniGame_HotPotato
                         (bombHolder.graphicsModule as PlayerGraphics).tail[(bombHolder.graphicsModule as PlayerGraphics).tail.Length - 1].pos,
                         Custom.RNV(),
                         smokeColor,
-                        (int)Custom.LerpMap(bombTimer, 20 * 40, 0, 25f, 40f));
+                        (int)Custom.LerpMap(bombData.bombTimer, 20 * 40, 0, 25f, 40f));
                 }
 
                 // 如果烟雾不存在或者玩家换了房间，重新创建烟雾
@@ -123,7 +119,7 @@ namespace Meadow_MiniGame_HotPotato
 
         public override bool IsExitsOpen(ArenaOnlineGameMode arena, On.ArenaBehaviors.ExitManager.orig_ExitsOpen orig, ArenaBehaviors.ExitManager self)
         {
-            return IsGameOver;
+            return bombData.gameOver;
         }
 
         public override void InitAsCustomGameType(ArenaSetup.GameTypeSetup self)
@@ -144,15 +140,16 @@ namespace Meadow_MiniGame_HotPotato
         }
         public void InitGame()
         {
-            bombTimer = initialBombTimer;
-            nextBombTimer = initialBombTimer;
-            bombHolder = null;
+            bombData.nextBombTimer = bombData.initialBombTimer;
+            bombData.bombTimer = bombData.nextBombTimer;
+            bombData.bombHolder = null;
 
-            // 初始化倒计时
+            // 初始化游戏开始前的倒计时
             isCountingDown = true;
             countdownTimer = COUNTDOWN_START;
 
-            IsGameOver = false;
+            bombData.gameStarted = false;
+            bombData.gameOver = false;
         }
 
         public override void HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, HUD.HUD self, ArenaGameSession session)
@@ -173,10 +170,6 @@ namespace Meadow_MiniGame_HotPotato
         }
         public override string TimerText()
         {
-            // if (isCountingDown && countdownTimer > 0)
-            // {
-            //     return $"游戏将在 {(countdownTimer / 40) + 1} 秒后开始...";
-            // }
             return "";
         }
         public override bool SpawnBatflies(FliesWorldAI self, int spawnRoom)
@@ -187,8 +180,12 @@ namespace Meadow_MiniGame_HotPotato
         {
             base.ArenaSessionCtor(arena, orig, self, game);
 
-            //初始化游戏计时器呀之类的
-            InitGame();
+            bombData = OnlineManager.lobby.AddData(new BombGameData());
+            if (OnlineManager.lobby.isOwner)
+            {
+                //初始化游戏计时器呀之类的
+                InitGame();
+            }
         }
         public override void ArenaSessionUpdate(ArenaOnlineGameMode arena, ArenaGameSession session)
         {
@@ -201,8 +198,8 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
-            // 处理倒计时
-            if (isCountingDown)
+            // 处理游戏前的倒计时
+            if (bombData.gameStarted)
             {
                 if (countdownTimer > 0)
                 {
@@ -211,21 +208,23 @@ namespace Meadow_MiniGame_HotPotato
                 }
                 else
                 {
-                    isCountingDown = false;
+                    bombData.gameStarted = true;
                 }
             }
 
             if (ShouldGameEnd(session))
             {
-                bombTimer = -1;
-                IsGameOver = true;
+                if (OnlineManager.lobby.isOwner)
+                {
+                    bombData.gameOver = true;
+                }
                 return;
             }
             //如果当前是房主,则进行炸弹持有者选择
             if (OnlineManager.lobby.isOwner)
             {
                 // 检查当前是否有炸弹持有者
-                if ((bombHolder == null || bombHolder.hasLeft) && (!ShouldGameEnd(session)))
+                if ((bombData.bombHolder == null || bombData.bombHolder.hasLeft) && (!ShouldGameEnd(session)))
                 {
                     RandomSelectBombHolder(session);
                 }
@@ -240,7 +239,7 @@ namespace Meadow_MiniGame_HotPotato
                         try
                         {
                             if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                                onlineObject != null && onlineObject.owner == bombHolder)
+                                onlineObject != null && onlineObject.owner == bombData.bombHolder)
                             {
                                 var player = abstractCreature.realizedCreature as Player;
                                 if (player != null && player.playerState.alive)
@@ -263,74 +262,46 @@ namespace Meadow_MiniGame_HotPotato
                     // 如果持有者无效，重置炸弹持有者
                     if (!holderValid && !ShouldGameEnd(session))
                     {
-                        bombHolder = null;
+                        bombData.bombHolder = null;
                         RandomSelectBombHolder(session);
                     }
                 }
-            }
-            //炸弹计时器
-            if (bombHolder != null)
-            {
-                if (bombTimer > 0)
+                //炸弹计时器
+                if (bombData.bombHolder != null)
                 {
-                    // 如果有炸弹持有者，更新计时器
-                    bombTimer--;
-
-                    // 同步显示倒计时到HUD
-                    if (session.game.cameras[0].hud != null)
+                    if (bombData.bombTimer > 0)
                     {
-                        var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
-                        if (gameHUD != null)
-                        {
-                            gameHUD.SyncCounter(bombTimer);
-                        }
+                        // 如果有炸弹持有者，更新计时器
+                        bombData.bombTimer--;
                     }
-                }
-                if (bombTimer <= 0)
-                {
-                    // 停止HUD计时器
-                    if (session.game.cameras[0].hud != null)
-                    {
-                        var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
-                        if (gameHUD != null)
-                        {
-                            gameHUD.StopTimer(true);
-                        }
-                    }
-
-                    if (OnlineManager.lobby.isOwner)
+                    if (bombData.bombTimer <= 0)
                     {
                         BombExplosion(session);
 
                         if (ShouldGameEnd(session))
                         {
-                            bombTimer = -1;
-                            IsGameOver = true;
-
-                            foreach (var onlinePlayer in OnlineManager.players)
-                            {
-                                if (!onlinePlayer.isMe)
-                                {
-                                    onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, bombTimer, bombHolder, IsGameOver);
-                                }
-                            }
-
-                            return;
+                            bombData.bombTimer = -1;
+                            bombData.gameOver = true;
+                        }
+                        else
+                        {
+                            //如果不该结束重新分配爆炸时间
+                            bombData.nextBombTimer = Custom.IntClamp(bombData.nextBombTimer % 40 - 5, 4, bombData.initialBombTimer) * 40;
+                            bombData.bombTimer = bombData.nextBombTimer;
                         }
                     }
-                    // 检查爆炸后是否应该结束游戏
-                    nextBombTimer = Custom.IntClamp(nextBombTimer % 40 - 5, 4, initialBombTimer) * 40;
-                    bombTimer = nextBombTimer;
+                }
+            }
 
-                    // 重置HUD计时器
-                    if (session.game.cameras[0].hud != null)
+            if (bombData.bombTimer > 0)
+            {
+                // 同步显示倒计时到HUD
+                if (session.game.cameras[0].hud != null)
+                {
+                    var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
+                    if (gameHUD != null)
                     {
-                        var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
-                        if (gameHUD != null)
-                        {
-                            gameHUD.ResetCounter(bombTimer);
-                            gameHUD.StartTimer();
-                        }
+                        gameHUD.SyncCounter(bombData.bombTimer);
                     }
                 }
             }
@@ -339,27 +310,26 @@ namespace Meadow_MiniGame_HotPotato
         }
         public void BombExplosion(ArenaGameSession session)
         {
-            if (bombHolder == null) return;
+            if (bombData.bombHolder == null) return;
             if (!OnlineManager.lobby.isOwner) return;
             // 本地处理爆炸
             // 获取炸弹持有者的Player实例
             foreach (var abstractCreature in session.Players)
             {
                 if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                    onlineObject.owner == HotPotatoArena.bombHolder)
+                    onlineObject.owner == bombData.bombHolder)
                 {
                     var player = abstractCreature.realizedCreature as Player;
                     if (player != null && player.room != null && player.playerState.alive)
                     {
+                        ExplosionPlayer_Local(player);
                         foreach (var onlinePlayer in OnlineManager.players)
                         {
                             if (!onlinePlayer.isMe)
                             {
-                                onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.ExplosionPlayer, bombHolder);
+                                onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.ExplosionPlayer, bombData.bombHolder);
                             }
                         }
-
-                        ExplosionPlayer_Local(player);
                         return;
                     }
                 }
@@ -449,23 +419,21 @@ namespace Meadow_MiniGame_HotPotato
             if (eligiblePlayers.Count > 0)
             {
                 int randomIndex = UnityEngine.Random.Range(0, eligiblePlayers.Count);
-                nextBombTimer = initialBombTimer;
-                bombTimer = nextBombTimer;
-                bombHolder = eligiblePlayers[randomIndex];
+                bombData.nextBombTimer = bombData.initialBombTimer;
+                bombData.bombTimer = bombData.nextBombTimer;
+                bombData.bombHolder = eligiblePlayers[randomIndex];
 
-                // 同步到其他玩家
-                foreach (var player in OnlineManager.players)
-                {
-                    if (player != null && !player.isMe)
-                    {
-                        player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, bombTimer, bombHolder, IsGameOver);
-                    }
-                }
+                // // 同步到其他玩家
+                // foreach (var player in OnlineManager.players)
+                // {
+                //     if (player != null && !player.isMe)
+                //     {
+                //         player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, bombData.bombTimer, bombData.bombHolder, IsGameOver);
+                //     }
+                // }
 
             }
-            else
-            {
-            }
+
         }
     }
 }

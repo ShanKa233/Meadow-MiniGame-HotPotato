@@ -64,9 +64,9 @@ namespace Meadow_MiniGame_HotPotato
         {
             base.Update();
 
-            if (HotPotatoArena.bombTimer >= 0)
+            if (OnlineManager.lobby.TryGetData(typeof(BombGameData), out var data) && data is BombGameData bombData)
             {
-                SyncCounter(HotPotatoArena.bombTimer);
+                SyncCounter(bombData.bombTimer);
             }
             else
             {
@@ -159,24 +159,27 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             // 获取炸弹持有者
             Player bombHolder = null;
-            foreach (var abstractCreature in session.Players)
+            if (OnlineManager.lobby.TryGetData(typeof(BombGameData), out var data) && data is BombGameData bombData)
             {
-                if (abstractCreature == null) continue;
-
-                if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                    onlineObject != null && onlineObject.owner == HotPotatoArena.bombHolder)
+                foreach (var abstractCreature in session.Players)
                 {
-                    bombHolder = abstractCreature.realizedCreature as Player;
-                    break;
+                    if (abstractCreature == null) continue;
+
+                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
+                        onlineObject != null && onlineObject.owner == bombData.bombHolder)
+                    {
+                        bombHolder = abstractCreature.realizedCreature as Player;
+                        break;
+                    }
                 }
             }
-
             // 如果找到炸弹持有者，从其位置播放声音
             if (bombHolder != null && bombHolder.room != null)
             {
                 cam.room.PlaySound(SoundID.Gate_Clamp_Lock, bombHolder.mainBodyChunk, false, 1f, 40f + UnityEngine.Random.value);
 
             }
+
         }
 
         float InternalGetFreq(float index)

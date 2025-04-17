@@ -6,22 +6,6 @@ namespace Meadow_MiniGame_HotPotato
 {
     public static class HotPotatoArenaRPCs
     {
-        [RainMeadow.RPCMethod]
-        public static void SyncRemix(RPCEvent rpcEvent, int bombTimer, OnlinePlayer bombHolder, bool isGameOver)
-        {
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena))
-            {
-                var potatoArena = (HotPotatoArena)arena.onlineArenaGameMode;
-
-                HotPotatoArena.bombTimer = bombTimer;
-                HotPotatoArena.bombHolder = bombHolder;
-                potatoArena.IsGameOver = isGameOver;
-                
-                //如果还在倒计时就提前结束倒计时
-                potatoArena.isCountingDown = false;
-            }
-        }
-
         // 可以添加传递炸弹的RPC方法
         [RainMeadow.RPCMethod]
         public static void PassBomb(OnlinePlayer newHolder)
