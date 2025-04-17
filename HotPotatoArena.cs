@@ -47,31 +47,14 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
-            // 获取炸弹持有者
-            Player bombHolder = null;
-            foreach (var abstractCreature in session.Players)
-            {
-                if (abstractCreature == null) continue;
-
-                try
-                {
-                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                        onlineObject != null && onlineObject.owner == bombData.bombHolder)
-                    {
-                        bombHolder = abstractCreature.realizedCreature as Player;
-                        break;
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    UnityEngine.Debug.LogError($"UpdateBombHolderEffects error: {e.Message}");
-                    continue;
-                }
-            }
-
+            // 使用缓存获取持有者实例
+            Player bombHolder = bombData.bombHolderCache;
+            
+            // 如果缓存无效，尝试更新缓存
             if (bombHolder == null || !bombHolder.playerState.alive || bombHolder.room == null)
             {
-                // 炸弹持有者不存在或已死亡，销毁特效
+                // 不直接在这里更新缓存，因为UpdateBombHolderCache已经会被调用
+                // 销毁特效
                 bombHolderSmoke?.Destroy();
                 bombHolderSmoke = null;
                 return;

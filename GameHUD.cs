@@ -157,29 +157,19 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (!reval && !forcePlay)
                 return;
-            // 获取炸弹持有者
+            
+            // 使用缓存获取炸弹持有者
             Player bombHolder = null;
             if (HotPotatoArena.bombData != null)
             {
-                foreach (var abstractCreature in session.Players)
-                {
-                    if (abstractCreature == null) continue;
-
-                    if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                        onlineObject != null && onlineObject.owner == HotPotatoArena.bombData.bombHolder)
-                    {
-                        bombHolder = abstractCreature.realizedCreature as Player;
-                        break;
-                    }
-                }
+                bombHolder = HotPotatoArena.bombData.bombHolderCache;
             }
+            
             // 如果找到炸弹持有者，从其位置播放声音
             if (bombHolder != null && bombHolder.room != null)
             {
                 cam.room.PlaySound(SoundID.Gate_Clamp_Lock, bombHolder.mainBodyChunk, false, 1f, 40f + UnityEngine.Random.value);
-
             }
-
         }
 
         float InternalGetFreq(float index)
