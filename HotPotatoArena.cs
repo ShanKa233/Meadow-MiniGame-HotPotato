@@ -161,18 +161,15 @@ namespace Meadow_MiniGame_HotPotato
             var gameHUD = new GameHUD(self, session.game.cameras[0], session);
             self.AddPart(gameHUD);
 
-            // // 初始化HUD计时器
-            // gameHUD.ResetCounter(bombTimer);
-            // gameHUD.StartTimer();
 
             // 如果允许聊天，添加聊天HUD
-            if (MatchmakingManager.currentInstance.canSendChatMessages)
-                self.AddPart(new ChatHud(self, session.game.cameras[0]));
+            // if (MatchmakingManager.currentInstance.canSendChatMessages)
+            //     self.AddPart(new ChatHud(self, session.game.cameras[0]));
 
-            // 添加观战HUD    
-            self.AddPart(new SpectatorHud(self, session.game.cameras[0]));
-            // 添加在线状态HUD
-            self.AddPart(new OnlineHUD(self, session.game.cameras[0], arena));
+            // // 添加观战HUD    
+            // self.AddPart(new SpectatorHud(self, session.game.cameras[0]));
+            // // 添加在线状态HUD
+            // self.AddPart(new OnlineHUD(self, session.game.cameras[0], arena));
         }
         public override string TimerText()
         {

@@ -75,24 +75,21 @@ namespace MiniGameHotPotato
                             if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject))
                             {
                                 // 确保两个玩家都活着
-                                if (self.Consious)
+                                HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
+                                HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
+                                HotPotatoArena.bombHolder = otherOnlineObject.owner;
+                                // 传递炸弹给新玩家
+                                foreach (var player in OnlineManager.players)
                                 {
-                                    HotPotatoArena.nextBombTimer = Custom.IntClamp(HotPotatoArena.nextBombTimer % 40 - 5, 4, HotPotatoArena.initialBombTimer) * 40;
-                                    HotPotatoArena.bombTimer = HotPotatoArena.nextBombTimer;
-                                    HotPotatoArena.bombHolder = otherOnlineObject.owner;
-                                    // 传递炸弹给新玩家
-                                    foreach (var player in OnlineManager.players)
+                                    if (!player.isMe)
                                     {
-                                        if (!player.isMe)
-                                        {
-                                            // 同步新的计时器状态和新的炸弹持有者给所有玩家
-                                            player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, otherOnlineObject.owner);
-                                            player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, HotPotatoArena.bombTimer, HotPotatoArena.bombHolder, potatoArena.IsGameOver);
-                                        }
+                                        // 同步新的计时器状态和新的炸弹持有者给所有玩家
+                                        player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, otherOnlineObject.owner);
+                                        player.InvokeOnceRPC(HotPotatoArenaRPCs.SyncRemix, HotPotatoArena.bombTimer, HotPotatoArena.bombHolder, potatoArena.IsGameOver);
                                     }
-                                    //本地击晕防止反复触发
-                                    otherPlayer.Stun(60);
                                 }
+                                //本地击晕防止反复触发
+                                otherPlayer.Stun(60);
                             }
                         }
                     }
