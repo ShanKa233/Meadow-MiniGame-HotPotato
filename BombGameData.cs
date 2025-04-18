@@ -16,6 +16,7 @@ namespace Meadow_MiniGame_HotPotato
         //开始先倒计时3秒,倒计时结束后开始游戏
         public bool gameStarted = false;
         public bool gameOver = false;
+        public int passCD = 0;
 
         public bool bombPassed = false;
         public Player bombHolderCache;//用于缓存上个炸弹持有者
@@ -41,6 +42,8 @@ namespace Meadow_MiniGame_HotPotato
             public bool gameStarted;
             [OnlineField]
             public bool gameOver;
+            [OnlineField]
+            public int passCD;
 
             public GameState() { }
 
@@ -54,6 +57,7 @@ namespace Meadow_MiniGame_HotPotato
                 nextBombTimer = bombData.nextBombTimer;
                 gameStarted = bombData.gameStarted;
                 gameOver = bombData.gameOver;
+                passCD = bombData.passCD;
             }
 
             public override Type GetDataType() => typeof(BombGameData);
@@ -70,6 +74,7 @@ namespace Meadow_MiniGame_HotPotato
                 bombData.nextBombTimer = nextBombTimer;
                 bombData.gameStarted = gameStarted;
                 bombData.gameOver = gameOver;
+                bombData.passCD = passCD;
             }
         }
     }

@@ -6,6 +6,8 @@ using RWCustom;
 using MoreSlugcats;
 using Smoke;
 using System.Collections.Generic;
+using MiniGameHotPotato;
+using BepInEx;
 
 namespace Meadow_MiniGame_HotPotato
 {
@@ -22,11 +24,9 @@ namespace Meadow_MiniGame_HotPotato
 
         public static BombGameData bombData;
 
-        public const int minPlayersRequired = 2; // 最少需要的玩家数量
 
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
-
 
         // 处理炸弹持有者特效
         private void UpdateBombHolderEffects(ArenaGameSession session)
@@ -142,6 +142,8 @@ namespace Meadow_MiniGame_HotPotato
             // 重置游戏状态
             bombData.gameStarted = false;
             bombData.gameOver = false;
+            // 重置传递CD
+            bombData.passCD = 0;
         }
         public void ResetCountdown()
         {
@@ -202,6 +204,10 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
+            if (bombData.passCD > 0&&OnlineManager.lobby.isOwner)
+            {
+                bombData.passCD--;
+            }
             // 处理游戏前的倒计时
             if (!bombData.gameStarted)
             {
@@ -486,7 +492,7 @@ namespace Meadow_MiniGame_HotPotato
         public bool ShouldGameEnd(ArenaGameSession session)
         {
             int alivePlayers = GetAlivePlayersCount(session);
-            return alivePlayers < minPlayersRequired;
+            return alivePlayers <MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value ;
         }
 
         // 随机选择炸弹持有者
@@ -532,6 +538,22 @@ namespace Meadow_MiniGame_HotPotato
                 bombData.bombTimer = bombData.nextBombTimer;
                 bombData.bombHolder = eligiblePlayers[randomIndex].onlinePlayer;
                 bombData.bombHolderCache = eligiblePlayers[randomIndex].player; // 直接缓存Player实例
+
+
+                eligiblePlayers[randomIndex].player.room.PlaySound(SoundID.MENU_Add_Level, eligiblePlayers[randomIndex].player.firstChunk, false, 1, 2);
+                // 传递炸弹的CD
+                bombData.passCD = 10;
+                // 击晕新持有者防止反复触发
+                eligiblePlayers[randomIndex].player.Stun(40);
+
+                // 同步到其他玩家
+                foreach (var player in OnlineManager.players)
+                {
+                    if (!player.isMe)
+                    {
+                        player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, eligiblePlayers[randomIndex].onlinePlayer);
+                    }
+                }
             }
         }
     }

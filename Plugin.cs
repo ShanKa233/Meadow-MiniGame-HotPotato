@@ -13,23 +13,26 @@ using UnityEngine;
 
 namespace MiniGameHotPotato
 {
-    [BepInPlugin("ShanKa.MiniGameHotPotato", "MiniGameHotPotato", "0.1.0")]
+    [BepInPlugin(modID, modeName, "0.1.0")]
     public partial class MiniGameHotPotato : BaseUnityPlugin
     {
-
-        public static string modName = "MiniGameHotPotato";
+        public const string modID = "ShanKa.MiniGameHotPotato";
+        public const string modeName = "MiniGameHotPotato";
         public static MiniGameHotPotato instance;
+        public static HotPotatoOptions options;
         private bool init;
         private bool fullyInit;
         private bool addedMod = false;
+
+        // 添加配置选项
 
         // public static OnlineGameMode.OnlineGameModeType hotPotatoGameMode = new OnlineGameMode.OnlineGameModeType("HotPotato", true);
         public void OnEnable()
         {
             instance = this;
+            options = new HotPotatoOptions(this);
 
             On.RainWorld.OnModsInit += RainWorld_OnModsInit;
-
         }
 
         private void RainWorld_OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
@@ -40,6 +43,8 @@ namespace MiniGameHotPotato
 
             try
             {
+                // 添加配置选项到机器连接器
+                MachineConnector.SetRegisteredOI(modID, options);
 
                 // 设置游戏模式
                 // 打算先做一个竞技场的版本先试试看, 如果可以的话再做大厅的版本
@@ -64,6 +69,7 @@ namespace MiniGameHotPotato
         {
             HotPotatoArena.bombData = resource.AddData(new BombGameData());
         }
+        
 
         private void Player_Collide(On.Player.orig_Collide orig, Player self, PhysicalObject otherObject, int myChunk, int otherChunk)
         {
@@ -71,7 +77,7 @@ namespace MiniGameHotPotato
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
                 //只让主机处理防止反复传递
-                if (OnlineManager.lobby.isOwner)
+                if (OnlineManager.lobby.isOwner && HotPotatoArena.bombData.passCD <= 0)
                 {
                     // 使用缓存系统检查自己是否是炸弹持有者
                     if (HotPotatoArena.bombData.bombHolderCache == self)
@@ -91,11 +97,13 @@ namespace MiniGameHotPotato
                                     HotPotatoArena.bombData.bombTimer = HotPotatoArena.bombData.nextBombTimer;
                                     HotPotatoArena.bombData.bombHolder = otherOnlineObject.owner;
                                     HotPotatoArena.bombData.bombHolderCache = otherPlayer; // 直接更新缓存
-                                    
+
                                     // 传递炸弹的音效
-                                    otherPlayer.room.PlaySound(SoundID.MENU_Add_Level,otherPlayer.firstChunk,false,1,2);
+                                    otherPlayer.room.PlaySound(SoundID.MENU_Add_Level, otherPlayer.firstChunk, false, 1, 2);
+                                    // 传递炸弹的CD
+                                    HotPotatoArena.bombData.passCD = 10;
                                     // 击晕新持有者防止反复触发
-                                    otherPlayer.Stun(60);
+                                    otherPlayer.Stun(40);
 
                                     // 同步到其他玩家
                                     foreach (var player in OnlineManager.players)

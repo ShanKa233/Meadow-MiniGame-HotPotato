@@ -24,7 +24,6 @@ namespace Meadow_MiniGame_HotPotato
         int lastCounter;
         int syncGoalCounter;
         float smoothCounter;
-        bool synced = true;
 
         #region display
         bool reval;
@@ -53,7 +52,7 @@ namespace Meadow_MiniGame_HotPotato
             hud.fContainers[0].AddChild(digiSingle_1);
 
             digiSingle_2 = GetNewDigiLabel();
-            hud.fContainers[0].AddChild(digiSingle_2);
+            hud.fContainers[0].AddChild(digiSingle_2);   
         }
 
         #endregion
@@ -61,8 +60,7 @@ namespace Meadow_MiniGame_HotPotato
         public override void Update()
         {
             base.Update();
-
-            if (HotPotatoArena.bombData != null)
+            if (HotPotatoArena.bombData != null&&!HotPotatoArena.bombData.gameOver)
             {
                 SyncCounter(HotPotatoArena.bombData.bombTimer);
             }
@@ -70,6 +68,7 @@ namespace Meadow_MiniGame_HotPotato
             {
                 StopTimer(true);
             }
+            
             if (reval)
             {
                 lastCounter = counter;
@@ -200,7 +199,6 @@ namespace Meadow_MiniGame_HotPotato
             }
             else
             {
-                synced = true;
                 return 1;
             }
         }
@@ -336,7 +334,6 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
             
-            synced = false;
             syncGoalCounter = currentCounter;
         }
 
