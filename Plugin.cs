@@ -55,7 +55,7 @@ namespace MiniGameHotPotato
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
                 //处理传递炸弹的碰撞事件
                 On.Player.Collide += Player_Collide;
-
+                //防止矛击互伤
                 On.Weapon.HitThisObject += Weapon_HitThisObject;
 
                 fullyInit = true;
@@ -73,7 +73,7 @@ namespace MiniGameHotPotato
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
                 bool num = obj is Player && self is Spear && self.thrownBy != null && self.thrownBy is Player;
-                if (num)return false;
+                if (num) return false;
             }
             return orig(self, obj);
         }

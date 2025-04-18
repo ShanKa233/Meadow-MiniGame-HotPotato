@@ -326,7 +326,7 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             
             // 如果是时间重置（新时间大于当前时间）或者差值过大，直接同步
-            if (currentCounter > counter || Mathf.Abs(counter - currentCounter) > 200)
+            if (currentCounter > counter || Mathf.Abs(counter - currentCounter) > 60)
             {
                 counter = currentCounter;
                 lastCounter = counter;
