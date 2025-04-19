@@ -18,7 +18,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.16";
+        public const string version = "0.1.17";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
@@ -97,7 +97,8 @@ namespace MiniGameHotPotato
             {
 
                 //如果炸弹是这个玩家而且CD小于0
-                if (HotPotatoArena.bombData.bombHolder.isMe//这个机子是炸弹的端口
+                if (HotPotatoArena.bombData.bombHolder != null
+                && HotPotatoArena.bombData.bombHolder.isMe//这个机子是炸弹的端口
                 && HotPotatoArena.bombData.bombHolderCache == self//这个碰撞的角色是炸弹的持有者
                 && HotPotatoArena.bombData.passCD <= 0)//传炸弹的CD小于0
                 {
