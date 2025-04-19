@@ -78,9 +78,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             // 调用原始方法
             orig(self);
-
-            // 检查当前游戏模式是否为热土豆模式
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && ((ArenaOnlineGameMode)OnlineManager.lobby.gameMode).currentGameMode == HotPotatoArena.arenaName)
             {
                 if (menuPotatoCWT.TryGetValue(self, out var potatoScene))
                 {
@@ -123,8 +121,11 @@ namespace Meadow_MiniGame_HotPotato
                     {
                         menuLabel.label.isVisible = false;
                     }
-                    self.arenaSettingsInterface.spearsHitCheckbox.selectable = true;//允许点击互相攻击按钮
-                    self.arenaSettingsInterface.spearsHitCheckbox.buttonBehav.greyedOut = false;//取消灰掉互相攻击按钮
+                    if (OnlineManager.lobby.isOwner)
+                    {
+                        self.arenaSettingsInterface.spearsHitCheckbox.selectable = true;//允许点击互相攻击按钮
+                        self.arenaSettingsInterface.spearsHitCheckbox.buttonBehav.greyedOut = false;//取消灰掉互相攻击按钮
+                    }
                 }
             }
         }
