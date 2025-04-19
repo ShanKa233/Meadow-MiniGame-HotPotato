@@ -50,6 +50,9 @@ namespace MiniGameHotPotato
                 // 打算先做一个竞技场的版本先试试看, 如果可以的话再做大厅的版本
                 // RainMeadow.OnlineGameMode.RegisterType(hotPotatoGameMode, typeof(HotPotatoGameMode), "Hot Potato!");
 
+                //用来在切换模式时改变背景图
+                HotPotatoScenes.InitHook();
+
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
