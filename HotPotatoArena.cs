@@ -20,7 +20,7 @@ namespace Meadow_MiniGame_HotPotato
 
         // 添加倒计时相关变量防止太早在游戏中加载内容导致后面进入房间的玩家无法读取
         private int countdownTimer = 3 * 40; // 3秒 * 40帧 = 120帧的倒计时
-        private const int COUNTDOWN_START = 3 * 40; // 倒计时初始值
+        private const int COUNTDOWN_START = 5 * 40; // 倒计时初始值
 
         public static BombGameData bombData;
 
@@ -204,7 +204,7 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
-            if (bombData.passCD > 0&&OnlineManager.lobby.isOwner)
+            if (bombData.passCD > 0 && OnlineManager.lobby.isOwner)
             {
                 bombData.passCD--;
             }
@@ -227,18 +227,20 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
 
-            if (ShouldGameEnd(session))
-            {
-                if (OnlineManager.lobby.isOwner)
-                {
-                    bombData.gameOver = true;
-                }
-                return;
-            }
 
             //如果当前是房主,则进行炸弹持有者选择
             if (OnlineManager.lobby.isOwner)
             {
+                if (ShouldGameEnd(session))
+                {
+                    bombData.gameOver = true;
+                    return;
+                }
+                else
+                {
+                    bombData.gameOver = false;
+                }
+
                 // 检查当前是否有炸弹持有者
                 if ((bombData.bombHolder == null || bombData.bombHolder.hasLeft) && (!ShouldGameEnd(session)))
                 {
@@ -280,21 +282,9 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
 
+            if (bombData.gameOver) return;
             // 更新炸弹持有者缓存
             UpdateBombHolderCache(session);
-
-            if (bombData.bombTimer > 0)
-            {
-                // 同步显示倒计时到HUD
-                if (session.game.cameras[0].hud != null)
-                {
-                    var gameHUD = session.game.cameras[0].hud.parts.Find(x => x is GameHUD) as GameHUD;
-                    if (gameHUD != null)
-                    {
-                        gameHUD.SyncCounter(bombData.bombTimer);
-                    }
-                }
-            }
             // 处理炸弹持有者特效
             UpdateBombHolderEffects(session);
         }
@@ -492,7 +482,7 @@ namespace Meadow_MiniGame_HotPotato
         public bool ShouldGameEnd(ArenaGameSession session)
         {
             int alivePlayers = GetAlivePlayersCount(session);
-            return alivePlayers <MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value ;
+            return alivePlayers < MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value;
         }
 
         // 随机选择炸弹持有者
@@ -539,8 +529,6 @@ namespace Meadow_MiniGame_HotPotato
                 bombData.bombHolder = eligiblePlayers[randomIndex].onlinePlayer;
                 bombData.bombHolderCache = eligiblePlayers[randomIndex].player; // 直接缓存Player实例
 
-
-                eligiblePlayers[randomIndex].player.room.PlaySound(SoundID.MENU_Add_Level, eligiblePlayers[randomIndex].player.firstChunk, false, 1, 2);
                 // 传递炸弹的CD
                 bombData.passCD = 10;
                 // 击晕新持有者防止反复触发

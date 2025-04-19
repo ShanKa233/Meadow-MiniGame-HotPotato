@@ -17,6 +17,7 @@ namespace Meadow_MiniGame_HotPotato
         public static MenuScene.SceneID potatoBackground = new MenuScene.SceneID("potatoBackground", true);
         private static Hook AreanaLobbyMenu_UpdateGameModeLabel_Hook;
         public static ConditionalWeakTable<Menu.MultiplayerMenu, MenuScene> menuPotatoCWT = new ConditionalWeakTable<Menu.MultiplayerMenu, MenuScene>();
+        public static ConditionalWeakTable<Menu.MultiplayerMenu, MenuLabel> menuPotatoCWT_version = new ConditionalWeakTable<Menu.MultiplayerMenu, MenuLabel>();
         public static void InitHook()
         {
 
@@ -43,25 +44,28 @@ namespace Meadow_MiniGame_HotPotato
                 i => i.MatchLdcI4(0),
                 i => i.Match(OpCodes.Callvirt),
                 i => i.Match(OpCodes.Ldfld),
-                i => i.MatchLdarg(0),   
+                i => i.MatchLdarg(0),
                 i => i.Match(OpCodes.Ldfld),
                 i => i.Match(OpCodes.Callvirt)
             ))
             {
-                UnityEngine.Debug.Log("il定位成功");
                 cursor.Emit(OpCodes.Ldarg, 0);
                 cursor.EmitDelegate<Action<Menu.MultiplayerMenu>>(menu =>
                 {
 
-                    UnityEngine.Debug.Log("menu生成成功");
                     if (menu is ArenaLobbyMenu)
                     {
+                        //添加背景
                         var potatoScene = new InteractiveMenuScene(menu, menu.pages[0], HotPotatoScenes.potatoBackground);
                         // potatoScene.myContainer.alpha = 0;
                         menuPotatoCWT.Add(menu, potatoScene);
                         menu.pages[0].subObjects.Add(potatoScene);
-                        
-                        UnityEngine.Debug.Log("lobby菜单绑定成功");
+                        //添加版本显示
+                        MenuLabel displayCurrentGameMode = new MenuLabel(menu, menu.pages[0], "potato v" + MiniGameHotPotato.MiniGameHotPotato.version, new Vector2(10, 20f), new Vector2(10f, 10f), true);
+                        displayCurrentGameMode.label.alignment = FLabelAlignment.Left;
+                        menuPotatoCWT_version.Add(menu, displayCurrentGameMode);
+                        menu.pages[0].subObjects.Add(displayCurrentGameMode);
+
                     }
 
                 });
@@ -74,6 +78,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             // 调用原始方法
             orig(self);
+
             // 检查当前游戏模式是否为热土豆模式
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
@@ -87,6 +92,17 @@ namespace Meadow_MiniGame_HotPotato
                     else if (self.scene.flatIllustrations != null && self.scene.flatIllustrations.Count > 0)
                     {
                         potatoScene.flatIllustrations[0].sprite.MoveInFrontOfOtherNode(self.scene.flatIllustrations[0].sprite);
+                    }
+                    //更改可见度显示版本号
+                    if (menuPotatoCWT_version.TryGetValue(self, out var menuLabel))
+                    {
+                        menuLabel.label.isVisible = true;
+                    }
+                    self.arenaSettingsInterface.spearsHitCheckbox.selectable = false;//禁止点击互相攻击按钮
+                    self.arenaSettingsInterface.spearsHitCheckbox.buttonBehav.greyedOut = true;//灰掉互相攻击按钮
+                    if (self.arenaSettingsInterface.spearsHitCheckbox.Checked)
+                    {
+                        self.arenaSettingsInterface.spearsHitCheckbox.Checked = false;//如果互相攻击按钮被勾选，则取消勾选
                     }
                 }
             }
@@ -102,6 +118,13 @@ namespace Meadow_MiniGame_HotPotato
                     {
                         potatoScene.flatIllustrations[0].sprite.MoveBehindOtherNode(self.scene.flatIllustrations[0].sprite);
                     }
+                    //更改可见度隐藏版本号
+                    if (menuPotatoCWT_version.TryGetValue(self, out var menuLabel))
+                    {
+                        menuLabel.label.isVisible = false;
+                    }
+                    self.arenaSettingsInterface.spearsHitCheckbox.selectable = true;//允许点击互相攻击按钮
+                    self.arenaSettingsInterface.spearsHitCheckbox.buttonBehav.greyedOut = false;//取消灰掉互相攻击按钮
                 }
             }
         }

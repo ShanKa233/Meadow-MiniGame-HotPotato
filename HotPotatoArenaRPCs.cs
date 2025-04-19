@@ -23,7 +23,12 @@ namespace Meadow_MiniGame_HotPotato
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)
                         {
+                            HotPotatoArena.bombData.nextBombTimer = Custom.IntClamp(HotPotatoArena.bombData.nextBombTimer / 40 - 5, 4, 30) * 40;
+                            HotPotatoArena.bombData.bombTimer = HotPotatoArena.bombData.nextBombTimer;
+
+                            HotPotatoArena.bombData.bombHolder = newHolder;
                             HotPotatoArena.bombData.bombHolderCache = player;
+                            HotPotatoArena.bombData.passCD = 30;
                             HotPotatoArena.bombData.bombPassed = true;
 
                             player.room.PlaySound(SoundID.MENU_Add_Level, player.firstChunk, false, 1, 2);

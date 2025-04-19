@@ -25,14 +25,14 @@ namespace Meadow_MiniGame_HotPotato
             try
             {
                 // 创建配置选项卡
-                OpTab hotPotatoTab = new OpTab(this, "烫手土豆");
+                OpTab hotPotatoTab = new OpTab(this, "烫手山芋");
                 Tabs = new OpTab[1] { hotPotatoTab };
                 
                 // 创建UI元素
                 HotPotatoSettings = new UIelement[]
                 {
                     // 标题
-                    new OpLabel(10f, 550f, "烫手土豆", bigText: true),
+                    new OpLabel(10f, 550f, "烫手山芋", bigText: true),
                     
                     // 游戏核心设置区域
                     new OpLabel(10f, 510f, "游戏核心设置", bigText: false),

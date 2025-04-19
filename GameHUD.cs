@@ -52,7 +52,7 @@ namespace Meadow_MiniGame_HotPotato
             hud.fContainers[0].AddChild(digiSingle_1);
 
             digiSingle_2 = GetNewDigiLabel();
-            hud.fContainers[0].AddChild(digiSingle_2);   
+            hud.fContainers[0].AddChild(digiSingle_2);
         }
 
         #endregion
@@ -60,7 +60,7 @@ namespace Meadow_MiniGame_HotPotato
         public override void Update()
         {
             base.Update();
-            if (HotPotatoArena.bombData != null&&!HotPotatoArena.bombData.gameOver)
+            if (HotPotatoArena.bombData != null && !HotPotatoArena.bombData.gameOver)
             {
                 SyncCounter(HotPotatoArena.bombData.bombTimer);
             }
@@ -68,7 +68,7 @@ namespace Meadow_MiniGame_HotPotato
             {
                 StopTimer(true);
             }
-            
+
             if (reval)
             {
                 lastCounter = counter;
@@ -154,14 +154,14 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (!reval && !forcePlay)
                 return;
-            
+
             // 使用缓存获取炸弹持有者
             Player bombHolder = null;
             if (HotPotatoArena.bombData != null)
             {
                 bombHolder = HotPotatoArena.bombData.bombHolderCache;
             }
-            
+
             // 如果找到炸弹持有者，从其位置播放声音
             if (bombHolder != null && bombHolder.room != null)
             {
@@ -321,19 +321,29 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (!reval)
                 StartTimer();
-            
+
             if (currentCounter == syncGoalCounter)
                 return;
-            
+
             // 如果是时间重置（新时间大于当前时间）或者差值过大，直接同步
-            if (currentCounter > counter || Mathf.Abs(counter - currentCounter) > 60)
+            if (Mathf.Abs(counter - currentCounter) > 40)
+            {
+
+                counter = currentCounter;
+                lastCounter = counter;
+                //用于重置声音,当超值过大重置一次来让声音重新播放
+                lastSoundIndex = float.MaxValue;
+                syncGoalCounter = currentCounter;
+                return;
+            }
+            if (currentCounter > counter)
             {
                 counter = currentCounter;
                 lastCounter = counter;
                 syncGoalCounter = currentCounter;
                 return;
             }
-            
+
             syncGoalCounter = currentCounter;
         }
 
