@@ -54,6 +54,7 @@ namespace MiniGameHotPotato
                 //用来在切换模式时改变背景图
                 HotPotatoScenes.InitHook();
 
+
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;

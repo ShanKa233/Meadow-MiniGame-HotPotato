@@ -144,6 +144,7 @@ namespace Meadow_MiniGame_HotPotato
             bombData.gameOver = false;
             // 重置传递CD
             bombData.passCD = 0;
+            bombData.fristBombExplode = false;
         }
         public void ResetCountdown()
         {
@@ -227,6 +228,12 @@ namespace Meadow_MiniGame_HotPotato
                 }
             }
 
+            //如果炸弹爆炸了,剩余玩家低于一定的值,而且没有结算就提前结算
+            if (bombData.gameOver && bombData.fristBombExplode&&!session.sessionEnded)
+            {
+                session.EndSession();
+                return;
+            }
 
             //如果当前是房主,则进行炸弹持有者选择
             if (OnlineManager.lobby.isOwner)
@@ -408,6 +415,8 @@ namespace Meadow_MiniGame_HotPotato
                     var player = abstractCreature.realizedCreature as Player;
                     if (player != null && player.room != null && player.playerState.alive)
                     {
+                        //如果触发过炸弹,满足直接结算的条件,当只剩下一个人的时候自动结算
+                        if (!bombData.fristBombExplode)bombData.fristBombExplode = true;
                         ExplosionPlayer_Local(player);
                         foreach (var onlinePlayer in OnlineManager.players)
                         {
@@ -481,7 +490,7 @@ namespace Meadow_MiniGame_HotPotato
         // 检查游戏是否应该结束
         public bool ShouldGameEnd(ArenaGameSession session)
         {
-            int alivePlayers = GetAlivePlayersCount(session);
+            int alivePlayers = session.PlayersStillActive(false, false);
             return alivePlayers < MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value;
         }
 
