@@ -271,7 +271,9 @@ namespace Meadow_MiniGame_HotPotato
                         // 如果有炸弹持有者，更新计时器
                         bombData.bombTimer--;
                     }
-                    if (bombData.bombTimer <= 0)
+                    if (bombData.bombTimer <= 0
+                    && ((bombData.bombHolderCache != null && bombData.bombHolderCache.room != null)
+                    || bombData.bombHolderCache == null))
                     {
                         BombExplosion(session);
 
@@ -282,7 +284,7 @@ namespace Meadow_MiniGame_HotPotato
                         }
                         else
                         {
-                            bombData.HandleBombTimer(reset:true);
+                            bombData.HandleBombTimer(reset: true);
                         }
                     }
                 }
@@ -406,26 +408,22 @@ namespace Meadow_MiniGame_HotPotato
             if (!OnlineManager.lobby.isOwner) return;//只让房主处理爆炸
             // 本地处理爆炸
             // 获取炸弹持有者的Player实例
-            foreach (var abstractCreature in session.Players)
+            if (bombData.bombHolderCache == null)
             {
-                if (OnlinePhysicalObject.map.TryGetValue(abstractCreature, out var onlineObject) &&
-                    onlineObject.owner == bombData.bombHolder)
+                var player = bombData.bombHolderCache;
+                if (player != null && player.room != null && player.playerState.alive)
                 {
-                    var player = abstractCreature.realizedCreature as Player;
-                    if (player != null && player.room != null && player.playerState.alive)
+                    //如果触发过炸弹,满足直接结算的条件,当只剩下一个人的时候自动结算
+                    if (!bombData.fristBombExplode) bombData.fristBombExplode = true;
+                    ExplosionPlayer_Local(player);
+                    foreach (var onlinePlayer in OnlineManager.players)
                     {
-                        //如果触发过炸弹,满足直接结算的条件,当只剩下一个人的时候自动结算
-                        if (!bombData.fristBombExplode) bombData.fristBombExplode = true;
-                        ExplosionPlayer_Local(player);
-                        foreach (var onlinePlayer in OnlineManager.players)
+                        if (!onlinePlayer.isMe)
                         {
-                            if (!onlinePlayer.isMe)
-                            {
-                                onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.ExplosionPlayer, bombData.bombHolder);
-                            }
+                            onlinePlayer.InvokeOnceRPC(HotPotatoArenaRPCs.ExplosionPlayer, bombData.bombHolder);
                         }
-                        return;
                     }
+                    return;
                 }
             }
         }
