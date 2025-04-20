@@ -23,9 +23,9 @@ namespace Meadow_MiniGame_HotPotato
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)
                         {
-                            HotPotatoArena.bombData.nextBombTimer = Custom.IntClamp(HotPotatoArena.bombData.nextBombTimer / 40 - 5, 4, 30) * 40;
-                            HotPotatoArena.bombData.bombTimer = HotPotatoArena.bombData.nextBombTimer;
-
+                            
+                            HotPotatoArena.bombData.HandleBombTimer(reduceSecond: MiniGameHotPotato.MiniGameHotPotato.options.BombReduceTime.Value);
+                            
                             HotPotatoArena.bombData.bombHolder = newHolder;
                             HotPotatoArena.bombData.bombHolderCache = player;
                             HotPotatoArena.bombData.passCD = 30;

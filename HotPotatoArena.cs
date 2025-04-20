@@ -106,16 +106,16 @@ namespace Meadow_MiniGame_HotPotato
 
         public override void InitAsCustomGameType(ArenaSetup.GameTypeSetup self)
         {
-            self.foodScore = 1;                     // 食物得分
-            self.survivalScore = 3;                 // 生存得分
-            self.spearHitScore = 0;                 // 矛命中得分
-            self.repeatSingleLevelForever = false;  // 是否无限重复单个关卡
-            self.savingAndLoadingSession = true;    // 允许保存和加载会话
-            self.denEntryRule = ArenaSetup.GameTypeSetup.DenEntryRule.Standard;  // 标准进入规则
-            self.rainWhenOnePlayerLeft = false;      // 当只剩一个玩家时下雨
-            self.levelItems = true;                 // 启用关卡物品
-            self.fliesSpawn = false;                 // 允许生成苍蝇
-            self.saveCreatures = false;             // 不保存生物状态
+            self.foodScore = 1;                                                 // 食物得分
+            self.survivalScore = 3;                                             // 生存得分
+            self.spearHitScore = 0;                                             // 矛命中得分
+            self.repeatSingleLevelForever = false;                              // 是否无限重复单个关卡
+            self.savingAndLoadingSession = true;                                // 允许保存和加载会话
+            self.denEntryRule = ArenaSetup.GameTypeSetup.DenEntryRule.Standard; // 标准进入规则
+            self.rainWhenOnePlayerLeft = false;                                 // 当只剩一个玩家时下雨
+            self.levelItems = true;                                             // 启用关卡物品
+            self.fliesSpawn = false;                                            // 禁止生成苍蝇
+            self.saveCreatures = false;                                         // 不保存生物状态
 
             self.spearsHitPlayers = false;//禁止玩家用矛互相攻击
         }
@@ -132,8 +132,9 @@ namespace Meadow_MiniGame_HotPotato
         }
         public void InitGame()
         {
-            bombData.nextBombTimer = bombData.initialBombTimer;
-            bombData.bombTimer = bombData.nextBombTimer;
+
+            bombData.initialBombTimer = GameTypeSetup.BombTimesInSecondsArray[GameTypeSetup.BombTimerIndex] * 40;//初始炸弹时间
+            bombData.HandleBombTimer(reset: true);
             bombData.bombHolder = null;
 
             //用于刷新缓存的炸弹持有者
@@ -229,7 +230,7 @@ namespace Meadow_MiniGame_HotPotato
             }
 
             //如果炸弹爆炸了,剩余玩家低于一定的值,而且没有结算就提前结算
-            if (bombData.gameOver && bombData.fristBombExplode&&!session.sessionEnded)
+            if (bombData.gameOver && bombData.fristBombExplode && !session.sessionEnded)
             {
                 session.EndSession();
                 return;
@@ -281,9 +282,7 @@ namespace Meadow_MiniGame_HotPotato
                         }
                         else
                         {
-                            //如果不该结束重新分配爆炸时间
-                            bombData.nextBombTimer = Custom.IntClamp(bombData.nextBombTimer % 40 - 5, 4, bombData.initialBombTimer) * 40;
-                            bombData.bombTimer = bombData.nextBombTimer;
+                            bombData.HandleBombTimer(reset:true);
                         }
                     }
                 }
@@ -416,7 +415,7 @@ namespace Meadow_MiniGame_HotPotato
                     if (player != null && player.room != null && player.playerState.alive)
                     {
                         //如果触发过炸弹,满足直接结算的条件,当只剩下一个人的时候自动结算
-                        if (!bombData.fristBombExplode)bombData.fristBombExplode = true;
+                        if (!bombData.fristBombExplode) bombData.fristBombExplode = true;
                         ExplosionPlayer_Local(player);
                         foreach (var onlinePlayer in OnlineManager.players)
                         {
@@ -533,8 +532,7 @@ namespace Meadow_MiniGame_HotPotato
             if (eligiblePlayers.Count > 0)
             {
                 int randomIndex = UnityEngine.Random.Range(0, eligiblePlayers.Count);
-                bombData.nextBombTimer = bombData.initialBombTimer;
-                bombData.bombTimer = bombData.nextBombTimer;
+                bombData.HandleBombTimer(reset: true);
                 bombData.bombHolder = eligiblePlayers[randomIndex].onlinePlayer;
                 bombData.bombHolderCache = eligiblePlayers[randomIndex].player; // 直接缓存Player实例
 

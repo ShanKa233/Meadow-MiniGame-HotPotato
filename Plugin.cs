@@ -18,7 +18,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.17";
+        public const string version = "0.1.18";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
@@ -53,7 +53,7 @@ namespace MiniGameHotPotato
 
                 //用来在切换模式时改变背景图
                 HotPotatoScenes.InitHook();
-
+                PotatoArenaMenu.InitHook();
 
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
@@ -112,9 +112,7 @@ namespace MiniGameHotPotato
                             if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject) &&
                                 otherOnlineObject != null && otherOnlineObject.owner != null)
                             {
-                                // 更新炸弹计时器和持有者
-                                HotPotatoArena.bombData.nextBombTimer = Custom.IntClamp(HotPotatoArena.bombData.nextBombTimer / 40 - 5, 4, 30) * 40;
-                                HotPotatoArena.bombData.bombTimer = HotPotatoArena.bombData.nextBombTimer;
+                                HotPotatoArena.bombData.HandleBombTimer(reduceSecond: options.BombReduceTime.Value);
                                 HotPotatoArena.bombData.bombHolder = otherOnlineObject.owner;
                                 HotPotatoArena.bombData.bombHolderCache = otherPlayer; // 直接更新缓存
 

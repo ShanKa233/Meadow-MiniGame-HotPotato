@@ -38,7 +38,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             cam = roomCamera;
 
-            counter = 40 * 30;
+            counter = 99 * 30;
             lastCounter = counter;
             lastSoundIndex = float.MaxValue;
 
