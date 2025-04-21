@@ -18,7 +18,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.18";
+        public const string version = "0.1.19";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
@@ -117,9 +117,12 @@ namespace MiniGameHotPotato
                                 HotPotatoArena.bombData.bombHolderCache = otherPlayer; // 直接更新缓存
 
                                 // 传递炸弹的音效
-                                otherPlayer.room.PlaySound(SoundID.MENU_Add_Level, otherPlayer.firstChunk, false, 1, 2);
+                                if (HotPotatoArena.bombData.passCD <= 0)
+                                {
+                                    otherPlayer.room.PlaySound(SoundID.MENU_Add_Level, otherPlayer.firstChunk, false, 1, 2);
+                                }
                                 // 传递炸弹的CD
-                                HotPotatoArena.bombData.passCD = 30;
+                                HotPotatoArena.bombData.passCD = 10;
                                 // 击晕新持有者防止反复触发
                                 otherPlayer.Stun(40);
 

@@ -69,8 +69,8 @@ namespace Meadow_MiniGame_HotPotato
             public bool gameStarted;
             [OnlineField]
             public bool gameOver;
-            [OnlineField]
-            public int passCD;
+            // [OnlineField]
+            // public int passCD;
             [OnlineField]
             public bool fristBombExplode;
 
@@ -92,7 +92,7 @@ namespace Meadow_MiniGame_HotPotato
                 nextBombTimer = bombData.nextBombTimer;
                 gameStarted = bombData.gameStarted;
                 gameOver = bombData.gameOver;
-                passCD = bombData.passCD;
+                // passCD = bombData.passCD;
                 fristBombExplode = bombData.fristBombExplode;
 
                 bombTimerIndex = bombData.bombTimerIndex;
@@ -113,9 +113,9 @@ namespace Meadow_MiniGame_HotPotato
                 bombData.nextBombTimer = nextBombTimer;
                 bombData.gameStarted = gameStarted;
                 bombData.gameOver = gameOver;
-                bombData.passCD = passCD;
+                // bombData.passCD = passCD;
                 bombData.fristBombExplode = fristBombExplode;
-                
+
                 bombData.bombTimerIndex = bombTimerIndex;
                 bombData.bombReduceTime = bombReduceTime;
             }

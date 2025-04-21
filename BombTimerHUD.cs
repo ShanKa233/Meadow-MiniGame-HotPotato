@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Meadow_MiniGame_HotPotato
 {
-    public class GameHUD : HudPart
+    public class BombTimerHUD : HudPart
     {
         static readonly float textRectSize = 25f;
         RoomCamera cam;
@@ -34,7 +34,7 @@ namespace Meadow_MiniGame_HotPotato
         float alpha;
         float lastSoundIndex;
 
-        public GameHUD(HUD.HUD hud, RoomCamera roomCamera) : base(hud)
+        public BombTimerHUD(HUD.HUD hud, RoomCamera roomCamera) : base(hud)
         {
             cam = roomCamera;
 

@@ -176,7 +176,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             //添加炸弹计时器,最重要
             //包括音效的部分都是这里处理的
-            var gameHUD = new GameHUD(self, session.game.cameras[0]);
+            var gameHUD = new BombTimerHUD(self, session.game.cameras[0]);
             self.AddPart(gameHUD);
             //添加文字提示一般用于显示左下角地图名和音乐
             self.AddPart(new HUD.TextPrompt(self));
@@ -206,7 +206,7 @@ namespace Meadow_MiniGame_HotPotato
                 return;
             }
 
-            if (bombData.passCD > 0 && OnlineManager.lobby.isOwner)
+            if (bombData.passCD > 0)
             {
                 bombData.passCD--;
             }
@@ -536,8 +536,8 @@ namespace Meadow_MiniGame_HotPotato
 
                 // 传递炸弹的CD
                 bombData.passCD = 10;
-                // 击晕新持有者防止反复触发
-                eligiblePlayers[randomIndex].player.Stun(40);
+                // 击晕新持有者防止反复触发,随机选择击晕的时间少一些
+                eligiblePlayers[randomIndex].player.Stun(20);
 
                 // 同步到其他玩家
                 foreach (var player in OnlineManager.players)

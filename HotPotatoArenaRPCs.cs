@@ -23,15 +23,18 @@ namespace Meadow_MiniGame_HotPotato
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)
                         {
-                            
+
                             HotPotatoArena.bombData.HandleBombTimer(reduceSecond: MiniGameHotPotato.MiniGameHotPotato.options.BombReduceTime.Value);
-                            
+
                             HotPotatoArena.bombData.bombHolder = newHolder;
                             HotPotatoArena.bombData.bombHolderCache = player;
-                            HotPotatoArena.bombData.passCD = 30;
+                            if (HotPotatoArena.bombData.passCD <= 0)
+                            {//给传递炸弹的时间加了一个小cd估计可以避免连续发声
+                                player.room.PlaySound(SoundID.MENU_Add_Level, player.firstChunk, false, 1, 2);
+                            }
+                            HotPotatoArena.bombData.passCD = 10;
                             HotPotatoArena.bombData.bombPassed = true;
 
-                            player.room.PlaySound(SoundID.MENU_Add_Level, player.firstChunk, false, 1, 2);
                             player.Stun(40); // 晕眩40tick
                             break;
                         }
