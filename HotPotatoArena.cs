@@ -178,6 +178,11 @@ namespace Meadow_MiniGame_HotPotato
             //包括音效的部分都是这里处理的
             var gameHUD = new BombTimerHUD(self, session.game.cameras[0]);
             self.AddPart(gameHUD);
+            
+            // //添加玩家位置显示HUD还没完工
+            // var positionHUD = new PlayerPositionHUD(self, session.game.cameras[0]);
+            // self.AddPart(positionHUD);
+            
             //添加文字提示一般用于显示左下角地图名和音乐
             self.AddPart(new HUD.TextPrompt(self));
             // 如果允许聊天，添加聊天HUD
