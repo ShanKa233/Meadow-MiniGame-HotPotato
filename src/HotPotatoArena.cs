@@ -27,6 +27,7 @@ namespace Meadow_MiniGame_HotPotato
 
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
+        private ArenaGameSession session;
 
         // 处理炸弹持有者特效
         private void UpdateBombHolderEffects(ArenaGameSession session)
@@ -134,7 +135,7 @@ namespace Meadow_MiniGame_HotPotato
         {
             //TODO:部分竞技场自动增加时间,以适应超大的地图
             bombData.initialBombTimer = GameTypeSetup.BombTimesInSecondsArray[GameTypeSetup.BombTimerIndex] * 40;//初始炸弹时间
-            bombData.HandleBombTimer(reset: true);
+            bombData.HandleBombTimer(reset: true, session: this.session);
             bombData.bombHolder = null;
 
             //用于刷新缓存的炸弹持有者
@@ -165,6 +166,7 @@ namespace Meadow_MiniGame_HotPotato
         public override void ArenaSessionCtor(ArenaOnlineGameMode arena, On.ArenaGameSession.orig_ctor orig, ArenaGameSession self, RainWorldGame game)
         {
             base.ArenaSessionCtor(arena, orig, self, game);
+            this.session = self;
             if (OnlineManager.lobby.isOwner)
             {
                 //初始化游戏计时器呀之类的
@@ -289,7 +291,7 @@ namespace Meadow_MiniGame_HotPotato
                         }
                         else
                         {
-                            bombData.HandleBombTimer(reset: true);
+                            bombData.HandleBombTimer(reset: true, session: session);
                         }
                     }
                 }
@@ -535,7 +537,7 @@ namespace Meadow_MiniGame_HotPotato
             if (eligiblePlayers.Count > 0)
             {
                 int randomIndex = UnityEngine.Random.Range(0, eligiblePlayers.Count);
-                bombData.HandleBombTimer(reset: true);
+                bombData.HandleBombTimer(reset: true, session: session);
                 bombData.bombHolder = eligiblePlayers[randomIndex].onlinePlayer;
                 bombData.bombHolderCache = eligiblePlayers[randomIndex].player; // 直接缓存Player实例
 

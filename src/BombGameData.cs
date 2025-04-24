@@ -29,7 +29,7 @@ namespace Meadow_MiniGame_HotPotato
         public Player bombHolderCache;//用于缓存上个炸弹持有者
 
 
-        public void HandleBombTimer(bool reset = false, int reduceSecond = 0)
+        public void HandleBombTimer(bool reset = false, int reduceSecond = 0, ArenaGameSession session = null)
         {
             // 只有主机可以处理
             if (!OnlineManager.lobby.isOwner) return;
@@ -37,7 +37,14 @@ namespace Meadow_MiniGame_HotPotato
             if (reset)
             {
                 // 重置为初始时间
-                nextBombTimer = initialBombTimer;
+                if (session != null && session.room?.abstractRoom?.name?.Contains("80s") == true)
+                {
+                    nextBombTimer = Mathf.Max(80 * 40, initialBombTimer);
+                }
+                else
+                {
+                    nextBombTimer = initialBombTimer;
+                }
                 bombTimer = nextBombTimer;
             }
             else if (reduceSecond > 0)
