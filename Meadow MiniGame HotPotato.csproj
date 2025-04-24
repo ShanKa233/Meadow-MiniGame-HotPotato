@@ -12,9 +12,9 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3464862647\plugins&quot; mkdir &quot;C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3464862647\plugins&quot;" />
-    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3464862647\plugins\&quot;" />
-    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3464862647\plugins\&quot;" />
+    <Exec Command="if not exist &quot;$(ProjectDir)mod\plugins&quot; mkdir &quot;$(ProjectDir)mod\plugins&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)mod\plugins\&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;$(ProjectDir)mod\plugins\&quot;" />
   </Target>
 
   <ItemGroup>

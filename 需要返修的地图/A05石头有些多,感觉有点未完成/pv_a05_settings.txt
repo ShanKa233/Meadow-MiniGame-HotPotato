@@ -1,0 +1,14 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0
+RainIntensity: 0
+RumbleIntensity: 0
+WaveSpeed: 0
+WaveLength: 0
+SecondWaveLength: 0
+Clouds: 0.185598
+Grime: 0
+RandomItemDensity: 0.01280577
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0.00821155
+Palette: 9

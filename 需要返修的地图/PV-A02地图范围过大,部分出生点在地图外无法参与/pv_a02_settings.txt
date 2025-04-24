@@ -1,0 +1,18 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0
+RainIntensity: 0
+RumbleIntensity: 0.002411884
+WaveSpeed: 0
+WaveLength: 0
+SecondWaveLength: 0
+Clouds: 0.4581946
+Grime: 0
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 2
+EffectColorA: 13
+EffectColorB: 13
+PlacedObjects: NoSpearStickZone><1419.617><1427.327><-0.5335693~-418.6531, NoSpearStickZone><267.7979><1415.212><-1.067123~-393.5742, PlayerPushback><288.8289><1410.746><340.9664~-1.91626, PlayerPushback><1381.634><1425.302><-343.1008~-16.85706, SeedCob><1331.594><350.6639><0~0~1~1, SeedCob><850.373><594.8611><0~0~1~1, SeedCob><771.2624><640.8511><0~0~1~1, 
+FadePalette: 2, 0.4001952, 0.4059954, 0.4001954, 0.4001954

@@ -1,0 +1,16 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0
+RainIntensity: 0
+RumbleIntensity: 0
+WaveSpeed: 0
+WaveLength: 0
+SecondWaveLength: 0
+Clouds: 1
+Grime: 0
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 29
+Effects: RoomWrap-1-20-20, SkyBloom-0-32.66797-99.36718, LightBurn-0-302.1328-126.0469, AboveCloudsView-0.5244056-285.5914-50.27657, SuperStructureProjector-0-730.6086-464.3453, ProjectedScanLines-0-692.1898-386.4406, Moth-0.4987939-290.9273-264.2477, 
+BackgroundOffset: 0,927.9901

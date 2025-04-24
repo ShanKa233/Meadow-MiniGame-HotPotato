@@ -1,0 +1,16 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0
+RainIntensity: 0
+RumbleIntensity: 0
+WaveSpeed: 0
+WaveLength: 0
+SecondWaveLength: 0
+Clouds: 0.3073966
+Grime: 0
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 5
+PlacedObjects: PlayerPushback><1203.984><1361.874><84.84144~-132.1133, NoSpearStickZone><1167.816><1346.011><2.134338~-147.5874, PlayerPushback><2397.597><1341.372><-57.6283~-128.3781, NoSpearStickZone><2403.724><1327.564><136.0664~-44.60388, PlayerPushback><1388.24><1440.949><-0.5335999~-151.8563, PlayerPushback><1563.777><1439.141><15.47418~-152.9234, PlayerPushback><2241.157><1432.696><2.134399~-149.7219, PlayerPushback><2074.146><1439.515><2.13446~-165.7297, PlayerPushback><1901.94><1438.851><4.268738~-157.7257, PlayerPushback><1728.021><1437.245><-5.869568~-153.4571, SeedCob><1798.277><396.2842><0~0~1~1, 
+FadePalette: 2, 0.4523947, 0.4523945, 0.4581943, 0.4523947, 0.4523945, 0.4523948

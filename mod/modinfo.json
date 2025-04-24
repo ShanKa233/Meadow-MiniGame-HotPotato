@@ -1,8 +1,8 @@
 {
 	"id": "ShanKa.MiniGameHotPotato",
 	"name": "Meadow Mini Game Hot Potato",
-	"version": "0.1.13", 
+	"version": "0.1.25", 
 	"authors": "ShanKa",
-	"description": "为雨甸添加热土豆小游戏<LINE>Add Hot Potato mini game for Rain Meadow<LINE>特别鸣谢：感谢哈维和诺谱以前做得热土豆小游戏<LINE>Special thanks: Thanks to Harvie and Nop for making the hot potato mini game",
+	"description": "Hot Potato – Added a new competitive arena game mode to the Meadow multiplayer mod. After entering Meadow's arena, you can switch to this mode using the left/right options at the top.<LINE>Hot Potato (also called TNT Tag) requires at least two players. 3 to 5 seconds after the game starts, a bomb will randomly spawn on one player. The only way to pass it is by touching another player. A countdown at the top of the screen shows when the bomb will explode, and the timer gets shorter with each pass—until finally, BOOM! The unlucky player gets blown to smithereens (evil grin). After exploding, the bomb respawns on a random player, and this continues until only one survivor remains!<LINE>Special Thanks:<LINE>Harvey & Nope for their secret project from long ago—some code was adapted and modified from it.<LINE>All the testers! The early versions of this mod were riddled with bugs, making for a rough experience—sorry about that! (wipes tears)<LINE>Teacher Golden Lizard for the amazing cover art—it’s absolutely gorgeous!",
 	"requirements": [ "henpemaz_rainmeadow"]
 } 

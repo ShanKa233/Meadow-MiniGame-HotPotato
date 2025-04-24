@@ -1,0 +1,19 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0.4768
+RainIntensity: 1
+RumbleIntensity: 1
+WaveSpeed: 0.7847993
+WaveLength: 0.5579993
+SecondWaveLength: 0
+Clouds: 0.4073765
+Grime: 0
+BkgDroneVolume: 0.3000001
+BkgDroneNoThreatVolume: 1
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 21
+Effects: ZeroG-0-20-20, RoomWrap-1-21.86902-96.67382, AboveCloudsView-0.7423915-297.3305-119.1102, FireFlies-0.3446078-350.1563-192.2125, 
+PlacedObjects: VoidSpawnEgg><529.7626><436.774><-249.7219~11.73907~1~3~0, VoidSpawnEgg><703.2539><254.1595><-418.3375~22.94452~1~3~0, VoidSpawnEgg><520.1003><674.1984><-316.9547~-65.09851~1~4~0, VoidSpawnEgg><859.1586><117.7302><427.4086~93.91248~1~2~0, VoidSpawnEgg><1207.926><599.0516><75.77039~27.21326~1~4~0, VoidSpawnEgg><859.4704><473.3435><414.0688~17.60852~1~2~0, VoidSpawnEgg><1382.422><79.60374><-100.3157~266.7969~1~4~0, CellDistortion><852.6536><425.3377><788.6518~7.688263~50~86.60254~0.08941054~0.3098078~1~0.4664061, 
+FadePalette: 4, 0.2725968

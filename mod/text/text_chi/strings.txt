@@ -1,0 +1,9 @@
+Hot Potato|烫手山蝓
+HotPotato|烫手山蝓
+Hot Potato Core Settings|烫手山蝓核心设定
+Minimum Players Required to Start|最少游戏开始玩家
+Explosion Timer:|爆炸时间
+Bomb Reduce Time:|递减时间:
+seconds to explode|秒后爆炸
+Show only Hot Potato levels|仅显示烫手山芋关卡
+Showing all levels|显示所有关卡

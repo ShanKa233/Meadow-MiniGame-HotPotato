@@ -132,7 +132,7 @@ namespace Meadow_MiniGame_HotPotato
         }
         public void InitGame()
         {
-
+            //TODO:部分竞技场自动增加时间,以适应超大的地图
             bombData.initialBombTimer = GameTypeSetup.BombTimesInSecondsArray[GameTypeSetup.BombTimerIndex] * 40;//初始炸弹时间
             bombData.HandleBombTimer(reset: true);
             bombData.bombHolder = null;
@@ -178,11 +178,11 @@ namespace Meadow_MiniGame_HotPotato
             //包括音效的部分都是这里处理的
             var gameHUD = new BombTimerHUD(self, session.game.cameras[0]);
             self.AddPart(gameHUD);
-            
+
             // //添加玩家位置显示HUD还没完工
             // var positionHUD = new PlayerPositionHUD(self, session.game.cameras[0]);
             // self.AddPart(positionHUD);
-            
+
             //添加文字提示一般用于显示左下角地图名和音乐
             self.AddPart(new HUD.TextPrompt(self));
             // 如果允许聊天，添加聊天HUD

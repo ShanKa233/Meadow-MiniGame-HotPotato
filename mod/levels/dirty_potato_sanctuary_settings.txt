@@ -1,0 +1,5 @@
+Template: NONE
+Palette: 7
+Effects: RoomWrap-1-20-20, ModifyEffectColorA-0,0,0.1630435-30-30, LightBurn-0.2717391-40-40, 
+PlacedObjects: CellDistortion><1215.8><901.2438><1312~718~50~86.60254~0.4782609~0.2826087~0~0.1413043, EnergySwirl><1215.557><901.448><EffectColor1~1324~724~50~86.60254~1, LanternOnStick><761.3337><1067.611><21~-96, LanternOnStick><1963.196><1081.206><-22~-99, LanternOnStick><701.9005><559.3818><-5~-102, LanternOnStick><2198.571><627.5892><30~-127, 
+AmbientSounds: OMNI><AM_WIN-HowlingWnd.ogg><733.0541><553.7094><0.5><1, OMNI><SO_SFX-ColdNight.ogg><663.4388><372.9404><0.5><1, 

@@ -1,0 +1,12 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0
+WaveSpeed: 0
+WaveLength: 0
+SecondWaveLength: 0
+Grime: 0
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 23
+FadePalette: 37, 0.3189963

@@ -1,0 +1,3 @@
+Template: NONE
+DangerType: None
+Palette: 2

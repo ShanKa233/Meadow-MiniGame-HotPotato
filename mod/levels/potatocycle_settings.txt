@@ -1,0 +1,8 @@
+Template: NONE
+Palette: 7
+EffectColorA: 15
+Effects: RoomWrap-1-19-128, ModifyEffectColorA-0,0,0.1521739-20-20, ModifyEffectColorB-0,0,0.5217391-120-36, 
+PlacedObjects: EnergySwirl><707.3483><456.6196><EffectColor1~1340~715~-120~122.6026~1, CellDistortion><707.8844><456.1632><828~363~-53~-0.3974304~0.25~0.3913043~0~0.2826087, LanternOnStick><424.8025><502.5317><12~-83, LanternOnStick><1218.82><406.8362><22~-91, LanternOnStick><194.8712><767.6591><-16~-111, LanternOnStick><743.3536><270.8862><22~-95, LanternOnStick><1128.306><699.7987><15~-99, GooDrips><567.094><383.3752><927~385~0~0~0.1956522, RotPlateTree><303.5763><412.4009><-64~68, RotPlateTree><1139.053><310.4637><33~139, RotPlateTree><374.7069><643.0547><40~96, RotPlateTree><867.0295><198.9478><35~123, RotPlateTree><966.8688><574.099><-109~69, 
+AmbientSounds: OMNI><AM_ENV-CityTone.ogg><747.5706><561.4371><0.5><1, OMNI><SO_SFX-ColdNight.ogg><611.8977><229.9219><0.3043478><1, 
+FadePalette: 7, 0
+RoomSpecificScriptActive: ON
