@@ -413,7 +413,7 @@ namespace Meadow_MiniGame_HotPotato
             if (!OnlineManager.lobby.isOwner) return;//只让房主处理爆炸
             // 本地处理爆炸
             // 获取炸弹持有者的Player实例
-            if (bombData.bombHolderCache == null)
+            if (bombData.bombHolderCache != null)
             {
                 var player = bombData.bombHolderCache;
                 if (player != null && player.room != null && player.playerState.alive)

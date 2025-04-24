@@ -18,7 +18,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.20";
+        public const string version = "0.1.24";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
@@ -54,7 +54,8 @@ namespace MiniGameHotPotato
                 //用来在切换模式时改变背景图
                 HotPotatoScenes.InitHook();
                 PotatoArenaMenu.InitHook();
-
+                PotatoPlaylist.InitHook();//用来增加按钮提供地图预设
+                
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
                 On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
@@ -62,6 +63,8 @@ namespace MiniGameHotPotato
                 On.Player.Collide += Player_Collide;
                 //防止矛击互伤
                 On.Weapon.HitThisObject += Weapon_HitThisObject;
+                
+                LoadPotatoIcon();
 
                 fullyInit = true;
             }
@@ -72,7 +75,14 @@ namespace MiniGameHotPotato
             }
         }
 
+        private void LoadPotatoIcon()
+        {
+            Futile.atlasManager.LoadImage("illustrations/Potato_Symbol_Show_Thumbs");
+            Futile.atlasManager.LoadImage("illustrations/Potato_Symbol_Clear_All");
+        }
+
         //防止在传炸弹模式用矛造成致命伤害
+
         private bool Weapon_HitThisObject(On.Weapon.orig_HitThisObject orig, Weapon self, PhysicalObject obj)
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)

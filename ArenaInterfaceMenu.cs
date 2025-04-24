@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using JollyCoop.JollyMenu;
 using Menu;
 using MonoMod;
 using MonoMod.RuntimeDetour;
@@ -21,8 +22,6 @@ namespace Meadow_MiniGame_HotPotato
         // 添加数字调整变量
         private static Hook AreanaLobbyMenu_UpdateGameModeLabel_Hook;//用于hook
         private BombScore ReduceTimeArray;
-
-
         public static void InitHook()
         {
             On.Menu.ArenaSettingsInterface.GetSelected += ArenaSettingsInterface_GetSelected;
@@ -50,6 +49,19 @@ namespace Meadow_MiniGame_HotPotato
                     case "MAX_BOMB_TIMER":
                         return GameTypeSetup.BombTimesInSecondsArray[(self.selectedObject as MultipleChoiceArray.MultipleChoiceButton).index] + " " + self.Translate("seconds to explode");
                 }
+            }
+
+            if (self.selectedObject is SymbolButton)
+            {
+                if ((self.selectedObject as SymbolButton).signalText == "FILTER")
+                {
+                    return self.Translate("Show only Hot Potato levels");
+                }
+                else if ((self.selectedObject as SymbolButton).signalText == "CLEARFILTER")
+                {
+                    return self.Translate("Showing all levels");
+                }
+
             }
             return orig(self);
         }
