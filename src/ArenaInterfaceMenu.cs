@@ -110,6 +110,7 @@ namespace Meadow_MiniGame_HotPotato
                     {
                         potatoArenaMenu.scene.flatIllustrations[0].sprite.MoveInFrontOfOtherNode(self.scene.flatIllustrations[0].sprite);
                     }
+                    potatoArenaMenu.scene.flatIllustrations[0].sprite.isVisible = true;
 
                     //更改可见度显示版本号
                     potatoArenaMenu.versionLabel.label.isVisible = true;
@@ -182,6 +183,7 @@ namespace Meadow_MiniGame_HotPotato
                     {
                         potatoArenaMenu.scene.flatIllustrations[0].sprite.MoveBehindOtherNode(self.scene.flatIllustrations[0].sprite);
                     }
+                    potatoArenaMenu.scene.flatIllustrations[0].sprite.isVisible = false;
                     //更改可见度隐藏版本号
                     potatoArenaMenu.versionLabel.label.isVisible = false;
 

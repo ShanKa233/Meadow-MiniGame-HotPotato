@@ -19,7 +19,7 @@ namespace Meadow_MiniGame_HotPotato
 
         public static void InitHook()
         {
-
+            // 增加一个cg
             On.Menu.MenuScene.BuildScene += MenuScene_BuildScene;
 
             // 在菜单背景添加后离开添加背景

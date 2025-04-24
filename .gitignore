@@ -2,3 +2,4 @@
 .cursor/rules/CacheOptimization.mdc
 .cursor/rules/GameMechanics.mdc
 .cursor/rules/HotPotatoMod.mdc
+bin/**
