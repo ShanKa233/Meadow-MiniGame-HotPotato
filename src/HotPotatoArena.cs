@@ -102,7 +102,7 @@ namespace Meadow_MiniGame_HotPotato
 
         public override bool IsExitsOpen(ArenaOnlineGameMode arena, On.ArenaBehaviors.ExitManager.orig_ExitsOpen orig, ArenaBehaviors.ExitManager self)
         {
-            return bombData.gameOver;
+            return bombData.gameOver || session?.game?.world?.rainCycle?.TimeUntilRain < 300;
         }
 
         public override void InitAsCustomGameType(ArenaSetup.GameTypeSetup self)

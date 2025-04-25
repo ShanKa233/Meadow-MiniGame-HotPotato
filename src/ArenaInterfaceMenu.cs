@@ -1,6 +1,8 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using JollyCoop.JollyMenu;
 using Menu;
 using MonoMod;
@@ -21,6 +23,7 @@ namespace Meadow_MiniGame_HotPotato
 
         // 添加数字调整变量
         private static Hook AreanaLobbyMenu_UpdateGameModeLabel_Hook;//用于hook
+        private static Hook AreanaLobbyMenu_Singal_Hook;//用于hook
         private BombScore ReduceTimeArray;
         public static void InitHook()
         {
@@ -34,8 +37,30 @@ namespace Meadow_MiniGame_HotPotato
                                typeof(PotatoArenaMenu).GetMethod("ArenaLobbyMenu_UpdateGameModeLabel",
                                    BindingFlags.Static | BindingFlags.NonPublic)
                            );
+            AreanaLobbyMenu_Singal_Hook = new Hook(
+                               typeof(RainMeadow.ArenaLobbyMenu).GetMethod("Singal",
+                                   BindingFlags.Instance | BindingFlags.Public),
+                               typeof(PotatoArenaMenu).GetMethod("ArenaLobbyMenu_Singal",
+                                   BindingFlags.Static | BindingFlags.NonPublic)
+                           );
 
             On.Menu.MultiplayerMenu.UpdateInfoText += MultiplayerMenu_UpdateInfoText;
+            
+
+        }
+        // 处理竞技场大厅菜单的信号
+        private static void ArenaLobbyMenu_Singal(Action<ArenaLobbyMenu, MenuObject, string> orig, ArenaLobbyMenu self, MenuObject sender, string message)
+        {
+            
+            orig(self, sender, message);
+            if (message == "INFO" && self.infoWindow != null&&
+            RainMeadow.RainMeadow.isArenaMode(out var arena) && ((ArenaOnlineGameMode)OnlineManager.lobby.gameMode).currentGameMode == HotPotatoArena.arenaName)
+            {
+                // 信息窗口信号
+                self.infoWindow.label.text = Regex.Replace(self.Translate("Requires at least 2 players. 3-5 seconds after start,<LINE>a bomb randomly spawns on one player,<LINE>pass by touching others.<LINE>Explodes when timer hits zero, <LINE>then respawns until only one survivor remains!"), "<LINE>", "\r\n"); // 设置信息窗口文本
+            }
+
+            // 调用原始方法
         }
 
 
@@ -101,6 +126,7 @@ namespace Meadow_MiniGame_HotPotato
             {
                 if (PotatoArenaMenu.menuPotatoCWT.TryGetValue(self, out var potatoArenaMenu))
                 {
+                    potatoArenaMenu.scene.flatIllustrations[0].sprite.isVisible = true;
                     //处理背景
                     if (self.scene.depthIllustrations != null && self.scene.depthIllustrations.Count > 0)
                     {
@@ -110,7 +136,11 @@ namespace Meadow_MiniGame_HotPotato
                     {
                         potatoArenaMenu.scene.flatIllustrations[0].sprite.MoveInFrontOfOtherNode(self.scene.flatIllustrations[0].sprite);
                     }
-                    potatoArenaMenu.scene.flatIllustrations[0].sprite.isVisible = true;
+                    else
+                    {
+                        potatoArenaMenu.scene.flatIllustrations[0].sprite.isVisible = false;
+                    }
+
 
                     //更改可见度显示版本号
                     potatoArenaMenu.versionLabel.label.isVisible = true;

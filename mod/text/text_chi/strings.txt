@@ -7,3 +7,4 @@ Bomb Reduce Time:|递减时间:
 seconds to explode|秒后爆炸
 Show only Hot Potato levels|仅显示烫手山芋关卡
 Showing all levels|显示所有关卡
+Requires at least 2 players. 3-5 seconds after start,<LINE>a bomb randomly spawns on one player,<LINE>pass by touching others.<LINE>Explodes when timer hits zero, <LINE>then respawns until only one survivor remains!|至少2名玩家。游戏开始3-5秒后，<LINE>炸弹会随机出现在一名玩家身上，<LINE>通过触碰传递.归零后爆炸循环往复,<LINE>直到只剩最后一名幸存者！
