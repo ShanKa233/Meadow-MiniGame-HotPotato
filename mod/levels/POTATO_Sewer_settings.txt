@@ -1,0 +1,13 @@
+Template: NONE
+WaveSpeed: 1
+WaveLength: 0.5541757
+WaveAmplitude: 0.348861
+SecondWaveLength: 0.8002071
+SecondWaveAmplitude: 0.2581091
+Palette: 37
+EffectColorA: 11
+EffectColorB: 7
+TerrainWaves: 0.2463764
+Effects: SilenceWater-0.7508621-43.74603-34.57143, WaterViscosity-0.1231886-296.0635-26.76191, WaterDepth-0.1466527-52.92065-99.87301, Fog-0.6980677-289.3016-147.9048, Darkness-0.5748795-715.1111-355.1428, WaterGlowworm-0-327.619-301.7143, 
+PlacedObjects: AirPocket><33.74232><587.0447><921.3969~96.92059~30~30~Y~109.1429, AirPocket><864.9401><149.5649><98.92065~552.9524~30~30~Y~539.2699, PlayerPushback><915.7615><458.8131><0~100, PlayerPushback><931.0363><351.3547><0~100, PlayerPushback><483.3808><687.4847><-83.11115~-7.396851, PlayerPushback><774.5995><681.6157><-67.46027~-10.09521, PlayerPushback><900.0049><624.7784><-65.30151~70.31744, PlayerPushback><219.8831><688.8381><-77.17465~-26.28558, PlayerPushback><931.7178><249.6546><0~100, AirPocket><33.58716><447.588><100~200~30~30~Y~186.3174, PlayerPushback><87.46558><599.999><-30.22221~-117.4922, 
+FadePalette: 14, 0.5072464

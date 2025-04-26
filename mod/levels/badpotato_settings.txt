@@ -1,0 +1,18 @@
+Template: NONE
+DangerType: None
+WaveSpeed: 0.5570941
+WaveLength: 0.971453
+WaveAmplitude: 0.0002358286
+SecondWaveLength: 0.1666667
+SecondWaveAmplitude: 0
+Palette: 2353
+TerrainStainAmount: 0
+TerrainStainHeight: 0.6195652
+TerrainWaves: 0.2717391
+TerrainEdgeRadius: 200
+TerrainGrain: 0.8499995
+TerrainDepth: -5.000007
+TerrainSkyFade: 1
+TerrainPalette: badlands
+Effects: RoomWrap-1-20-20, SandPuffs-1-30-30, 
+PlacedObjects: TerrainHandle><69.70563><67.19501><-40~0~369~29~123, TerrainHandle><1003.922><83.10156><-40~0~187~7~25, TerrainHandle><1277.367><50.4169><-40~0~40~0~116, TerrainHandle><2300.567><98.42007><-40~0~280~36~65, TerrainHandle><3114.16><124.3836><-589~-112~116~14~37, MudPit><1235.802><95.47351><717~35~15, LocustCloud><3310.37><491.6427><-48~380, LocustCloud><2148><606><-16~139, LocustCloud><70><512><-37~308, LocustCloud><920><539><-38~171, TerrainRubble><325.4412><132.9412><75~269, TerrainRubble><732><139><75~269, TerrainRubble><1181><166.0043><75~269, TerrainRubble><1998><170><75~269, TerrainRubble><1595><155><75~269, TerrainRubble><2881><142.0034><75~269, TerrainRubble><2479><163.001><75~269, TerrainRubble><3202><194><75~269, CustomDecal><433.8115><46.81682><8~575~794~291~294~-58~-213~174~0~1~0~rust1~0.3695652~1~0.3695652~1~0.3695652~1~0.3695652~1, CustomDecal><919><141><-190~316~794~291~624~-57~-438~205~0~1~0~rustb1~0.6086956~1~0.4021739~1~0.7282609~1~0.3695652~1, CustomDecal><1456><179><612~579~975~392~956~-157~-438~205~0~1~0~rust1~0.6086956~1~0.6413044~1~0.7282609~1~0.3695652~1, CustomDecal><1223><16><-79~624~1050~412~857~-57~-438~205~0~1~0~rust2~0.6086956~1~0.4021739~1~0.7282609~1~0.3695652~1, CustomDecal><2346><89><-287~674~642~869~446~-210~-50~217~0~1~0~rust2~0.6086956~1~0.4021739~1~0.7282609~1~0.3695652~1, CustomDecal><2226><522><8~575~794~291~294~-58~-213~174~0~1~0~rust1~0.3695652~1~0.3695652~1~0.3695652~1~0.3695652~1, CustomDecal><-133><-43><612~579~975~392~956~-157~-438~205~0~1~0~rust1~0.6086956~1~0.6413044~1~0.7282609~1~0.3695652~1, 

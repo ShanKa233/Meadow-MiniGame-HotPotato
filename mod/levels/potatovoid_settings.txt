@@ -1,0 +1,7 @@
+Template: NONE
+Palette: 28
+EffectColorA: 13
+EffectColorB: 13
+Effects: VoidMelt-0.8260869-20-20, WaterFluxMinLevel-0.4565217-306-83, WaterFluxFrequency-0.2065217-303-30, WaterFluxMinDelay-0.25-566-30, WaterFluxMaxLevel-1-310-143, DirtyWater-1-295-291, 
+PlacedObjects: LightFixture><386.6891><330.8152><HolyFire~2.320496~-509~48, LightFixture><107><340><HolyFire~2.320496~-509~48, LightFixture><272><353><HolyFire~2.320496~-509~48, LanternOnStick><1125.418><380.8176><8~-89, LanternOnStick><746.9384><577.8172><30~-94, LightFixture><1126><381><HolyFire~2.320496~-509~48, LightFixture><745><574><HolyFire~2.320496~-509~48, LanternOnStick><722><212><8~-73, LightFixture><722><213><HolyFire~2.320496~-509~48, LightSource><270.0606><355.1906><1~Environment~-5~184~50~86.60254~0~0~Fade~0.9347826~0, LightSource><388><343><1~Environment~-5~184~50~86.60254~0~0~Fade~0.9347826~0, LightSource><750><569><1~Environment~-268~-6~50~86.60254~0~0~Fade~0.9347826~0, LightSource><1125><381><1~Environment~-268~-6~50~86.60254~0~0~Fade~0.9347826~0, LightSource><725><214><1~Environment~-5~184~50~86.60254~0~0~Fade~0.9347826~0, LanternOnStick><559><552><-23~-68, LightFixture><555><550><HolyFire~20.3205~-626~48, LightSource><559><551><1~Environment~-268~-6~50~86.60254~0~0~Fade~0.9347826~0, 
+FadePalette: 10, 0.8478261

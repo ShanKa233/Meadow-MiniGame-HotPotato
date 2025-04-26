@@ -1,0 +1,9 @@
+Template: NONE
+DangerType: None
+RainIntensity: 1
+RumbleIntensity: 1
+WaterReflectionAlpha: 0
+Palette: 6
+Effects: RoomWrap-1-1080-17, SkyBloom-1-1084-86, LightBurn-0.2391304-1084-160, 
+PlacedObjects: CellDistortion><839.6771><382.1571><692~-10~50~86.60254~0.1195652~0.2065217~0.1195652~0.3369565, 
+FadePalette: 2, 0.2826087
