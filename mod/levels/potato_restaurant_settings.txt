@@ -1,7 +1,7 @@
 Template: NONE
 DangerType: None
-Palette: 48
-EffectColorA: 11
+Palette: 2351
+EffectColorA: 10
 EffectColorB: 9
 PlacedObjects: LightSource><340.1824><540.2531><1~Environment~-229.3651~-314.4762~-107.0476~-406.1276~1~0~None~0~0, LightSource><457.4863><542.7036><1~Environment~19.96832~-368.9841~-220.9206~-292.7943~1~0~None~0~0, LightSource><617.4697><540.6746><1~Environment~144.6349~-363.0476~-341.8095~-174.0641~1~0~None~0~0, 
-FadePalette: 20, 0.2111803
+FadePalette: 17, 0

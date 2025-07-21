@@ -1,0 +1,7 @@
+Template: NONE
+DangerType: None
+Palette: 41
+EffectColorA: 10
+EffectColorB: 10
+Effects: SkyBloom-0.5543478-20-20, 
+FadePalette: 32, 0.4021739

@@ -13,7 +13,8 @@ namespace Meadow_MiniGame_HotPotato
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
                 // 给新的炸弹持有者添加晕眩效果
-                var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
+                var game = (RWCustom.Custom.rainWorld?.processManager?.currentMainLoop as RainWorldGame);
+                if (game == null) return;
                 foreach (var abstractCreature in game.session.Players)
                 {
                     if (abstractCreature != null &&
@@ -48,7 +49,8 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
             {
-                var game = (RWCustom.Custom.rainWorld.processManager.currentMainLoop as RainWorldGame);
+                var game = (RWCustom.Custom.rainWorld?.processManager?.currentMainLoop as RainWorldGame);
+                if (game == null) return;
                 if (game.manager.upcomingProcess != null)
                 {
                     return;
