@@ -29,7 +29,7 @@ namespace Meadow_MiniGame_HotPotato
 
 
         private static void MultiplayerMenu_ctor(ILContext il)
-        {
+        {//暂时注释,因为现在不在需要修改原版的菜单,而是需要修改meadow的自制菜单
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(
                 MoveType.After,
@@ -43,6 +43,7 @@ namespace Meadow_MiniGame_HotPotato
             ))
             {
                 cursor.Emit(OpCodes.Ldarg, 0);
+                
                 cursor.EmitDelegate<Action<Menu.MultiplayerMenu>>(menu =>
                 {
 

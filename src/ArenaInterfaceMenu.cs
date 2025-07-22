@@ -5,15 +5,70 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JollyCoop.JollyMenu;
 using Menu;
+using Menu.Remix.MixedUI;
 using MonoMod;
 using MonoMod.RuntimeDetour;
 using RainMeadow;
+using RainMeadow.UI.Pages;
 using RWCustom;
 using UnityEngine;
 // using static Menu.SandboxSettingsInterface;
 
 namespace Meadow_MiniGame_HotPotato
 {
+
+    public class OnlineHotPotatoSettingsInterface : RectangularMenuObject
+    {
+        public OnlineHotPotatoSettingsInterface(Menu.Menu menu, MenuObject owner, Vector2 pos, Vector2 size) : base(menu, owner, pos, size)
+        {
+            // 初始化热土豆设置标题
+            var settingsLabel = new MenuLabel(menu, this, "Hot Potato Settings", new Vector2(0, size.y - 30), new Vector2(size.x, 30), false)
+            {
+                label = { 
+                    alignment = FLabelAlignment.Center 
+                }
+            };
+            Container.AddChild(settingsLabel.label);
+            this.SafeAddSubobjects(settingsLabel);
+
+            // 初始化炸弹计时器标签
+            var timerLabel = new MenuLabel(menu, this, "Bomb Timer:", new Vector2(20, size.y - 80), new Vector2(150, 20), false)
+            {
+                label = {
+                    alignment = FLabelAlignment.Left
+                }
+            };
+            this.SafeAddSubobjects(timerLabel);
+
+            // 初始化炸弹减少时间标签
+            var reduceTimeLabel = new MenuLabel(menu, this, "Reduce Time:", new Vector2(20, size.y - 110), new Vector2(150, 20), false)
+            {
+                label = {
+                    alignment = FLabelAlignment.Left
+                }
+            };
+            this.SafeAddSubobjects(reduceTimeLabel);
+        }
+
+        public void OnShutdown()
+        {
+            
+            // Lobby lobby = OnlineManager.lobby;
+        }
+
+        // public void SetCurrentlySelectedOfSeries(string id, int index)
+        // {
+        //     arenaMode.clientSettings.GetData<ArenaTeamClientSettings>().team = index;
+        // }
+
+        // public int GetCurrentlySelectedOfSeries(string id)
+        // {
+        //     return arenaMode.clientSettings.GetData<ArenaTeamClientSettings>().team;
+        // }
+
+    }
+
+
     public class PotatoArenaMenu
     {
         public InteractiveMenuScene scene;
@@ -37,6 +92,8 @@ namespace Meadow_MiniGame_HotPotato
                                typeof(PotatoArenaMenu).GetMethod("ArenaLobbyMenu_UpdateGameModeLabel",
                                    BindingFlags.Static | BindingFlags.NonPublic)
                            );
+
+
             AreanaLobbyMenu_Singal_Hook = new Hook(
                                typeof(RainMeadow.ArenaLobbyMenu).GetMethod("Singal",
                                    BindingFlags.Instance | BindingFlags.Public),
@@ -45,15 +102,16 @@ namespace Meadow_MiniGame_HotPotato
                            );
 
             On.Menu.MultiplayerMenu.UpdateInfoText += MultiplayerMenu_UpdateInfoText;
-            
+
 
         }
+
         // 处理竞技场大厅菜单的信号
         private static void ArenaLobbyMenu_Singal(Action<ArenaLobbyMenu, MenuObject, string> orig, ArenaLobbyMenu self, MenuObject sender, string message)
         {
-            
+
             orig(self, sender, message);
-            if (message == "INFO" && self.infoWindow != null&&
+            if (message == "INFO" && self.infoWindow != null &&
             RainMeadow.RainMeadow.isArenaMode(out var arena) && ((ArenaOnlineGameMode)OnlineManager.lobby.gameMode).currentGameMode == HotPotatoArena.arenaName)
             {
                 // 信息窗口信号
@@ -122,8 +180,10 @@ namespace Meadow_MiniGame_HotPotato
         {
             // 调用原始方法
             orig(self);
+            UnityEngine.Debug.Log("正在检查游戏模式是否为热土豆模式");
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && ((ArenaOnlineGameMode)OnlineManager.lobby.gameMode).currentGameMode == HotPotatoArena.arenaName)
             {
+                UnityEngine.Debug.Log("当前游戏模式为热土豆模式");
                 if (PotatoArenaMenu.menuPotatoCWT.TryGetValue(self, out var potatoArenaMenu))
                 {
                     potatoArenaMenu.scene.flatIllustrations[0].sprite.isVisible = true;

@@ -3,8 +3,11 @@ using IL;
 using Meadow_MiniGame_HotPotato;
 using MoreSlugcats;
 using RainMeadow;
+using RainMeadow.UI;
 using RWCustom;
 using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Security.Permissions;
 using UnityEngine;
 
@@ -28,6 +31,17 @@ namespace MiniGameHotPotato
         // 添加配置选项
 
         // public static OnlineGameMode.OnlineGameModeType hotPotatoGameMode = new OnlineGameMode.OnlineGameModeType("HotPotato", true);
+
+        public static bool isMyCoolGameMode(ArenaOnlineGameMode arena, out HotPotatoArena tb)
+        {
+            tb = null;
+            if (arena.currentGameMode == HotPotatoArena.PotatoArena.value)
+            {
+                tb = (arena.registeredGameModes.FirstOrDefault(x => x.Key == HotPotatoArena.PotatoArena.value).Value as HotPotatoArena);
+                return true;
+            }
+            return false;
+        }
         public void OnEnable()
         {
             instance = this;
@@ -47,23 +61,19 @@ namespace MiniGameHotPotato
                 // 添加配置选项到机器连接器
                 MachineConnector.SetRegisteredOI(modID, options);
 
-                // 设置游戏模式
-                // 打算先做一个竞技场的版本先试试看, 如果可以的话再做大厅的版本
-                // RainMeadow.OnlineGameMode.RegisterType(hotPotatoGameMode, typeof(HotPotatoGameMode), "Hot Potato!");
+                On.Menu.Menu.ctor += Menu_ctor;
 
                 //用来在切换模式时改变背景图
                 HotPotatoScenes.InitHook();
                 PotatoArenaMenu.InitHook();
                 PotatoPlaylist.InitHook();//用来增加按钮提供地图预设
-                
+
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
-                On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;
+                // On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;//老的游戏模式注册内容
+                
                 //处理传递炸弹的碰撞事件
                 On.Player.Collide += Player_Collide;
-                //防止矛击互伤
-                On.Weapon.HitThisObject += Weapon_HitThisObject;
-                
                 LoadPotatoIcon();
 
                 fullyInit = true;
@@ -75,25 +85,29 @@ namespace MiniGameHotPotato
             }
         }
 
+        private void Menu_ctor(On.Menu.Menu.orig_ctor orig, Menu.Menu self, ProcessManager manager, ProcessManager.ProcessID ID)
+        {
+            orig(self, manager, ID);
+            if (self is ArenaOnlineLobbyMenu)
+            {
+                AddNewMode();
+            }
+        }
+
+        private void AddNewMode()
+        {
+
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena))
+            {
+                arena.AddExternalGameModes(HotPotatoArena.PotatoArena, new HotPotatoArena());
+            }
+        }
+
         private void LoadPotatoIcon()
         {
             Futile.atlasManager.LoadImage("illustrations/Potato_Symbol_Show_Thumbs");
             Futile.atlasManager.LoadImage("illustrations/Potato_Symbol_Clear_All");
         }
-
-        //防止在传炸弹模式用矛造成致命伤害
-
-        private bool Weapon_HitThisObject(On.Weapon.orig_HitThisObject orig, Weapon self, PhysicalObject obj)
-        {
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
-            {
-                bool num = obj is Player && self is Spear && self.thrownBy != null && self.thrownBy is Player;
-                if (num) return false;
-            }
-            return orig(self, obj);
-        }
-
-
         private void OnlineResource_OnAvailable(OnlineResource resource)
         {
             HotPotatoArena.bombData = resource.AddData(new BombGameData());
@@ -103,7 +117,7 @@ namespace MiniGameHotPotato
         private void Player_Collide(On.Player.orig_Collide orig, Player self, PhysicalObject otherObject, int myChunk, int otherChunk)
         {
             orig(self, otherObject, myChunk, otherChunk);
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && arena.onlineArenaGameMode is HotPotatoArena potatoArena)
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && isMyCoolGameMode(arena, out var potatoArena))
             {
 
                 //如果炸弹是这个玩家而且CD小于0
@@ -154,10 +168,9 @@ namespace MiniGameHotPotato
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena))
             {
-                var myNewGamemode = new HotPotatoArena();
-                if (!arena.registeredGameModes.ContainsKey(myNewGamemode))
+                if (!arena.registeredGameModes.ContainsKey(HotPotatoArena.PotatoArena.value))
                 {
-                    arena.registeredGameModes.Add(myNewGamemode, HotPotatoArena.PotatoArena.value);
+                    arena.registeredGameModes.Add(HotPotatoArena.PotatoArena.value, new HotPotatoArena());
                 }
             }
             orig(self, manager);

@@ -8,10 +8,15 @@ using Smoke;
 using System.Collections.Generic;
 using MiniGameHotPotato;
 using BepInEx;
+using RainMeadow.UI;
+using RainMeadow.UI.Components;
+using Meadow_MiniGame_HotPotato.Effect;
+
+using ArenaMode = RainMeadow.ArenaOnlineGameMode;
 
 namespace Meadow_MiniGame_HotPotato
 {
-    public class HotPotatoArena : ExternalArenaGameMode
+    public partial class HotPotatoArena : ExternalArenaGameMode
     {
         public static string arenaName = "Hot Potato";
         public static ArenaSetup.GameTypeID PotatoArena = new ArenaSetup.GameTypeID(arenaName, register: false); // dont register so we dont add to local arena
@@ -25,6 +30,41 @@ namespace Meadow_MiniGame_HotPotato
         public static BombGameData bombData;
 
 
+        public override ArenaSetup.GameTypeID GetGameModeId { get => PotatoArena;}
+
+
+        public TabContainer.Tab? myTab;
+        private OnlineHotPotatoSettingsInterface? myInterface;
+        // public OnlineTeamBattleSettingsInterface? myHotPotatoSettingInterface;
+        public override void OnUIEnabled(ArenaOnlineLobbyMenu menu)
+        {
+
+            base.OnUIEnabled(menu);
+            // 在主大厅页面的Tab容器中添加"热土豆设置"标签页
+
+            if (myTab == null)
+            {
+                myTab = menu.arenaMainLobbyPage.tabContainer.AddTab("Hot Potato Settings");
+                myTab.AddObjects(myInterface = new OnlineHotPotatoSettingsInterface(myTab.menu, myTab, new(0, 0), menu.arenaMainLobbyPage.tabContainer.size));
+            }
+            // OnlineTeamBattleSettingsInterface
+        }
+
+        public override void OnUIDisabled(ArenaOnlineLobbyMenu menu)
+        {
+            base.OnUIDisabled(menu);
+            // 关闭热土豆设置界面，释放资源
+            myInterface?.OnShutdown();
+            // 移除"热土豆设置"标签页
+            if (myTab != null) menu.arenaMainLobbyPage.tabContainer.RemoveTab(myTab);
+            myTab = null;
+        }
+
+        public override void OnUIShutDown(ArenaOnlineLobbyMenu menu)
+        {
+            base.OnUIShutDown(menu);
+            myInterface?.OnShutdown();
+        }
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
         private ArenaGameSession session;
@@ -120,17 +160,17 @@ namespace Meadow_MiniGame_HotPotato
 
             self.spearsHitPlayers = false;//禁止玩家用矛互相攻击
         }
-        public override string AddCustomIcon(ArenaOnlineGameMode arena, PlayerSpecificOnlineHud hud)
-        {
-            if (hud.clientSettings.owner == OnlineManager.mePlayer)
-            {
-                return "Symbol_StunBomb";
-            }
-            else
-            {
-                return base.AddCustomIcon(arena, hud);
-            }
-        }
+        // public override string AddCustomIcon(ArenaOnlineGameMode arena, PlayerSpecificOnlineHud hud)
+        // {
+        //     if (hud.clientSettings.owner == OnlineManager.mePlayer)
+        //     {
+        //         return "Symbol_StunBomb";
+        //     }
+        //     else
+        //     {
+        //         return base.AddCustomIcon(arena, hud);
+        //     }
+        // }
         public void InitGame()
         {
             //TODO:部分竞技场自动增加时间,以适应超大的地图
@@ -465,7 +505,7 @@ namespace Meadow_MiniGame_HotPotato
 
             for (int i = 0; i < 30; i++)
             {
-                room.AddObject(new APieceOfSlug(vector, (Custom.RNV() + Vector2.up * 2).normalized * 40f * Random.value + player.mainBodyChunk.vel, player));
+                room.AddObject(new PieceOfSlug(vector, (Custom.RNV() + Vector2.up * 2).normalized * 40f * Random.value + player.mainBodyChunk.vel, player));
             }
             player.Die();
             player.Destroy();
@@ -557,4 +597,18 @@ namespace Meadow_MiniGame_HotPotato
             }
         }
     }
+
+    internal class HotPotatoInterface : RectangularMenuObject
+{
+    private ArenaMode gameMode;
+    private HotPotatoArena hotPotatoArena;
+    private Menu.Menu menu;
+    private TabContainer.Tab myTab;
+    private object value;
+    private Vector2 size;
+
+    public HotPotatoInterface(Menu.Menu menu, MenuObject owner, Vector2 pos, Vector2 size) : base(menu, owner, pos, size)
+    {
+    }
+}
 }
