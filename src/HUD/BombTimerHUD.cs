@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using HUD;
 using RainMeadow;
 using RWCustom;
 using UnityEngine;
+using HUD;
 
-namespace Meadow_MiniGame_HotPotato
+namespace Meadow_MiniGame_HotPotato.HUDStuff
 {
     public class BombTimerHUD : HudPart
     {

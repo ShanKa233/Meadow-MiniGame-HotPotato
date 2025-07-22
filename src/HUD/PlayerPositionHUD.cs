@@ -6,7 +6,7 @@ using RWCustom;
 using System;
 using NUnit.Framework;
 
-namespace Meadow_MiniGame_HotPotato
+namespace Meadow_MiniGame_HotPotato.HUDStuff
 {
     public class PlayerPositionHUD : HudPart
     {

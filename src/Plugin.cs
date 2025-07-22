@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Security.Permissions;
 using UnityEngine;
+using Meadow_MiniGame_HotPotato.UI;
 
 //#pragma warning disable CS0618
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -21,7 +22,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.28";
+        public const string version = "0.1.30";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;

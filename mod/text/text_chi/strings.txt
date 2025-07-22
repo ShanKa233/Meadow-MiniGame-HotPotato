@@ -2,9 +2,112 @@ Hot Potato|烫手山蝓
 HotPotato|烫手山蝓
 Hot Potato Core Settings|烫手山蝓核心设定
 Minimum Players Required to Start|最少游戏开始玩家
-Explosion Timer:|爆炸时间
+Explosion Timer:|爆炸时间:
 Bomb Reduce Time:|递减时间:
 seconds to explode|秒后爆炸
 Show only Hot Potato levels|仅显示烫手山芋关卡
 Showing all levels|显示所有关卡
+
 Requires at least 2 players. 3-5 seconds after start,<LINE>a bomb randomly spawns on one player,<LINE>pass by touching others.<LINE>Explodes when timer hits zero, <LINE>then respawns until only one survivor remains!|至少2名玩家。游戏开始3-5秒后，<LINE>炸弹会随机出现在一名玩家身上，<LINE>通过触碰传递.归零后爆炸循环往复,<LINE>直到只剩最后一名幸存者！
+
+
+//非常非常感谢这个西班牙语翻译的资料,一个一个词在那里找我真不敢想多麻烦,之后我再看看需不需要润色之类的,先凑合用用看
+// Arena Mode
+ME|我
+Got All<LINE>ScugSlots!!|获得所有<LINE>蛞蝓猫槽位!!
+Joining<LINE>soon!|即将<LINE>加入!
+Ready!|准备就绪!
+Selecting<LINE>Slugcat|选择<LINE>蛞蝓猫
+In Game!|游戏中!
+Showing players in thumbnail view|以缩略图显示玩家
+Showing players in list view|以列表显示玩家
+Current Mode:|当前模式:
+Do some wacky stuff around here!|在这里做些疯狂的事!
+Free For All|自由混战
+Trust no one. Last scug standing wins|不要相信任何人。活到最后的蛞蝓猫获胜。
+Team Battle|团队战斗
+Choose a faction. Last team standing wins.|选择阵营。活到最后的团队获胜。
+Join Team "<TEAMNAME>"|加入"<TEAMNAME>"队
+POST-GAME STATS|赛后统计
+WINS|胜利
+KILLS|击杀
+DEATHS|死亡
+This game mode doesnt have any info to give|此游戏模式没有可提供的信息
+Ready:|准备:
+Playlist Progress:|游玩地图列表:
+WAIT FOR OTHERS|等待他人
+FORCE READY|强制准备
+LOBBY WILL LOCK|大厅将锁定
+JOIN?|加入?
+QUEUED TO JOIN|排队加入
+READY?|准备好了?
+UNREADY|取消准备
+WAITING|等待中
+Ready up to join the host when the match begins|准备好在比赛开始时加入主机
+START MATCH!|开始比赛!
+Waiting for others...|等待其他人...
+Waiting for host...|等待主机...
+Welcome to Arena Online!<LINE>All players must ready up to begin.|欢迎来到在线竞技场!<LINE>所有玩家必须准备就绪才能开始。
+Exit to Lobby Select|退出到大厅选择
+Click to open <TABNAME> tab|点击打开<TABNAME>标签
+Arena Playlist|竞技场关卡列表
+Search for levels|搜索关卡
+Search levels|搜索关卡
+Match Settings|比赛设置
+//8个空格
+Repeat Rooms:|        重复房间:
+Allow Item Stealing:|允许物品抢夺:
+Players can steal items from each other|玩家可以互相偷窃物品
+Players cannot steal items from each other|玩家不能互相偷窃物品
+Allow Mid-Game Join:|允许中途加入:
+Players can join each round|玩家可以每回合加入
+Players can only join at the first round|玩家只能在第一回合加入
+Better Hitbox:|更好的碰撞箱:
+Thrown weapons are corrected to prevent no-clips|投掷武器已修正以防止穿模
+Thrown weapons follow vanilla behaviour|投掷武器遵循原版行为
+Countdown Timer:|倒计时:
+How long the grace timer at the beginning of rounds lasts for. Default 5s.|每回合开始时的宽限计时器持续时间。默认5秒
+Arena Game Mode:|竞技场游戏模式:
+The game mode for this match|本场比赛的游戏模式
+Slugcat Abilities|蛞蝓猫能力
+Disable Mauling:|禁用撕咬:
+Prevent Artificer and <PAINCATNAME> from mauling|阻止工匠和<PAINCATNAME>撕咬
+Disable Artificer Stun:|禁用工匠眩晕:
+Prevent Artificer from stunning other players|阻止工匠眩晕其他玩家
+Sain't:|圣徒模式:
+Disable Saint ascendance ability, but allow it to throw spears|禁用圣徒升天能力，但仍允许投掷长矛
+//给圣徒飞天时间后面加8个空格
+Saint Ascendance Duration:|圣徒升天持续时间:        
+How long Saint's ascendance ability lasts for. Default: 3s|圣徒升天能力持续时间。默认:3秒
+<PAINCATNAME> gets egg at 0 throw skill:|<PAINCATNAME>在投掷技能为0时获得蛋:
+If <PAINCATNAME> spawns with 0 throw skill, also spawn with Eggzer0|如果<PAINCATNAME>以0投掷技能生成，也会生成Eggzer0
+<PAINCATNAME> can always throw spears:|<PAINCATNAME>总能投掷长矛:
+Always allow <PAINCATNAME> to throw spears, even if throw skill is 0|总是允许<PAINCATNAME>投掷长矛，即使投掷技能为0
+<PAINCATNAME> sometimes gets a friend:|<PAINCATNAME>有时会获得朋友:
+Allow <PAINCATNAME> to rarely spawn with a little friend|允许<PAINCATNAME>偶尔带着小伙伴生成
+Watcher Camo Duration:|观察者伪装持续时间:
+How long Wacher's abilities last for. Default: 12s|观察者能力持续时间。默认:12秒
+Team Settings|团队设置
+TEAM|团队
+Team Lerp Color:|团队颜色渐变:
+How much do you want team color to show on players? From 0 to 1|你希望玩家身上显示多少程度的团队颜色?从0到1
+You cant color without Remix on!|没有开启Remix无法着色!
+Waiting|等待中
+Prepare for combat,|准备战斗,
+Prepare for war,|准备战争,
+Winner!|胜利者!
+<TEAMNAME> WIN!|<TEAMNAME>队获胜!
+Unknown user|未知用户
+TO LOBBY|返回大厅
+QUIT|离开
+
+// Arena Slugcat Select
+Back To Lobby|返回大厅
+Go back to main lobby|返回主大厅
+You have been unreadied. Switch back to re-ready yourself automatically|你已取消准备。切换回来会自动重新准备。
+The match is starting in <COUNTDOWN>! Ready up!!|比赛将在<COUNTDOWN>后开始!准备!!
+THE NIGHTCAT|夜猫
+THE FARTIFICER|肛匠
+THE SLUGPUP|蛞蝓幼崽
+THE UNKNOWN|未知
+Unknown|未知

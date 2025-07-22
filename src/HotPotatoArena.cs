@@ -11,6 +11,8 @@ using BepInEx;
 using RainMeadow.UI;
 using RainMeadow.UI.Components;
 using Meadow_MiniGame_HotPotato.Effect;
+using Meadow_MiniGame_HotPotato.HUDStuff;
+using Meadow_MiniGame_HotPotato.UI;
 
 using ArenaMode = RainMeadow.ArenaOnlineGameMode;
 
@@ -33,38 +35,6 @@ namespace Meadow_MiniGame_HotPotato
         public override ArenaSetup.GameTypeID GetGameModeId { get => PotatoArena;}
 
 
-        public TabContainer.Tab? myTab;
-        private OnlineHotPotatoSettingsInterface? myInterface;
-        // public OnlineTeamBattleSettingsInterface? myHotPotatoSettingInterface;
-        public override void OnUIEnabled(ArenaOnlineLobbyMenu menu)
-        {
-
-            base.OnUIEnabled(menu);
-            // 在主大厅页面的Tab容器中添加"热土豆设置"标签页
-
-            if (myTab == null)
-            {
-                myTab = menu.arenaMainLobbyPage.tabContainer.AddTab("Hot Potato Settings");
-                myTab.AddObjects(myInterface = new OnlineHotPotatoSettingsInterface(myTab.menu, myTab, new(0, 0), menu.arenaMainLobbyPage.tabContainer.size));
-            }
-            // OnlineTeamBattleSettingsInterface
-        }
-
-        public override void OnUIDisabled(ArenaOnlineLobbyMenu menu)
-        {
-            base.OnUIDisabled(menu);
-            // 关闭热土豆设置界面，释放资源
-            myInterface?.OnShutdown();
-            // 移除"热土豆设置"标签页
-            if (myTab != null) menu.arenaMainLobbyPage.tabContainer.RemoveTab(myTab);
-            myTab = null;
-        }
-
-        public override void OnUIShutDown(ArenaOnlineLobbyMenu menu)
-        {
-            base.OnUIShutDown(menu);
-            myInterface?.OnShutdown();
-        }
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果
         private ArenaGameSession session;

@@ -3,6 +3,7 @@ using RainMeadow;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Meadow_MiniGame_HotPotato.UI;
 
 namespace Meadow_MiniGame_HotPotato
 {

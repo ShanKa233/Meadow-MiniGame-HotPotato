@@ -4,7 +4,7 @@ using RainMeadow;
 using RWCustom;
 using UnityEngine;
 
-namespace Meadow_MiniGame_HotPotato
+namespace Meadow_MiniGame_HotPotato.UI
 {
     // 自定义分数控制器基类
     public abstract class ScoreController : PositionedMenuObject
@@ -218,7 +218,7 @@ namespace Meadow_MiniGame_HotPotato
         public ScoreDragger scoreDragger;
 
         // 获取游戏的炸弹时间设置
-        public int[] BombTimesInSecondsArray => Meadow_MiniGame_HotPotato.GameTypeSetup.BombTimesInSecondsArray;
+        public int[] BombTimesInSecondsArray => Meadow_MiniGame_HotPotato.UI.GameTypeSetup.BombTimesInSecondsArray;
 
         public virtual string DescriptorString => "";
 
