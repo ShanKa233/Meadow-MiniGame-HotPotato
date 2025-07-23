@@ -43,6 +43,15 @@ namespace Meadow_MiniGame_HotPotato.UI
             );
             potatoArenaMenu.ReduceTimeArray.pos = new Vector2(size.x * 0.5f - xOffset, size.y - 150);
             this.SafeAddSubobjects(potatoArenaMenu.ReduceTimeArray);
+
+            // 处理幸存者数量的按钮控件 - 与计时器垂直对齐
+            potatoArenaMenu.SurvivorCountArray = new SurvivorCountScore(
+                menu, this,
+                menu.Translate("Survivor Count:"),
+                "SURVIVOR_COUNT"
+            );
+            potatoArenaMenu.SurvivorCountArray.pos = new Vector2(size.x * 0.5f - xOffset, size.y - 200);
+            this.SafeAddSubobjects(potatoArenaMenu.SurvivorCountArray);
         }
 
         // 实现 IOwnMultipleChoiceArray 接口所需的方法
@@ -113,6 +122,9 @@ namespace Meadow_MiniGame_HotPotato.UI
         public MenuLabel versionLabel;
         public MultipleChoiceArray TimerArray;
         public BombScore ReduceTimeArray;
+        public SurvivorCountScore SurvivorCountArray;
+
+
         public static void InitHook()
         {
             On.Menu.Menu.UpdateInfoText += Menu_UpdateInfoText;
@@ -148,6 +160,7 @@ namespace Meadow_MiniGame_HotPotato.UI
     {
         public static int BombTimerIndex => MiniGameHotPotato.MiniGameHotPotato.options.BombTimer.Value;
         public static int BombReduceTime => MiniGameHotPotato.MiniGameHotPotato.options.BombReduceTime.Value;
+        public static int MinPlayersRequired => MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value;
         // public static int[] BombTimesInSecondsArray = new int[6] { 10, 30, 45, 60, 80, 99 };
         public static int[] BombTimesInSecondsArray = new int[6] { 5, 15, 25, 45, 85, 99 };
     }

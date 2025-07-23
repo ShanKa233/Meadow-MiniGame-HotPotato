@@ -71,58 +71,7 @@ namespace Meadow_MiniGame_HotPotato
                 {
                     menu.arenaMainLobbyPage.arenaSettingsInterface.spearsHitCheckbox.Checked = false;//如果互相攻击按钮被勾选，则取消勾选
                 }
-                // //处理炸弹计时器的按钮控件
-                // if (potatoArenaMenu.TimerArray == null)
-                // {
-                //     potatoArenaMenu.TimerArray = new MultipleChoiceArray
-                //     (menu.arenaMainLobbyPage.arenaSettingsInterface.menu, menu.arenaMainLobbyPage.arenaSettingsInterface, menu.arenaMainLobbyPage.arenaSettingsInterface
-                //     , menu.arenaMainLobbyPage.arenaSettingsInterface.wildlifeArray.pos + new Vector2(0f, -50f)
-                //     , menu.arenaMainLobbyPage.arenaSettingsInterface.menu.Translate("Explosion Timer:")
-                //     , "MAX_BOMB_TIMER"
-                //     , 120f, 340, 6
-                //     , textInBoxes: false
-                //     , splitText: false);
-                //     menu.arenaMainLobbyPage.arenaSettingsInterface.subObjects.Add(potatoArenaMenu.TimerArray);
-                // }
-                // else
-                // {
-                //
-                //     potatoArenaMenu.TimerArray.pos = menu.arenaMainLobbyPage.arenaSettingsInterface.wildlifeArray.pos + new Vector2(0f, -50f);
-                //     if (OnlineManager.lobby.isOwner)
-                //     {
-                //         potatoArenaMenu.TimerArray.greyedOut = false;
-                //     }
-                //     else
-                //     {
-                //         potatoArenaMenu.TimerArray.greyedOut = true;
-                //     }
-                // }
-                // //处理炸弹减少时间的按钮控件
-                // if (potatoArenaMenu.ReduceTimeArray == null)
-                // {
-                //     potatoArenaMenu.ReduceTimeArray = new BombScore(
-                //         menu.arenaMainLobbyPage.arenaSettingsInterface.menu, menu.arenaMainLobbyPage.arenaSettingsInterface,
-                //         menu.arenaMainLobbyPage.arenaSettingsInterface.menu.Translate("Bomb Reduce Time:"),
-                //         "BOMB_REDUCE_TIME"
-                //     );
-                //     menu.arenaMainLobbyPage.arenaSettingsInterface.subObjects.Add(potatoArenaMenu.ReduceTimeArray);
-                //     potatoArenaMenu.ReduceTimeArray.pos = menu.arenaMainLobbyPage.arenaSettingsInterface.wildlifeArray.pos + new Vector2(0f, -100f);
-                // }
-                // else
-                // {
-                //     potatoArenaMenu.ReduceTimeArray.pos = menu.arenaMainLobbyPage.arenaSettingsInterface.wildlifeArray.pos + new Vector2(0f, -100f);
-                //     if (OnlineManager.lobby.isOwner)
-                //     {
-                //         potatoArenaMenu.ReduceTimeArray.scoreDragger.buttonBehav.greyedOut = false;
-                //     }
-                //     else
-                //     {
-                //         potatoArenaMenu.ReduceTimeArray.scoreDragger.buttonBehav.greyedOut = true;
-                //     }
-                // }
-
             }
-            // OnlineTeamBattleSettingsInterface
         }
 
         public override void OnUIDisabled(ArenaOnlineLobbyMenu menu)
@@ -142,19 +91,6 @@ namespace Meadow_MiniGame_HotPotato
             //更改可见度隐藏版本号
             potatoArenaMenu.versionLabel.label.isVisible = false;
 
-            // //处理炸弹计时器的按钮控件
-            // if (potatoArenaMenu.TimerArray != null && !potatoArenaMenu.TimerArray.greyedOut)
-            // {
-            //     potatoArenaMenu.TimerArray.pos = new Vector2(0f, -300f);
-            //     potatoArenaMenu.TimerArray.greyedOut = true;
-            // }
-            // //处理炸弹减少时间的按钮控件
-            // if (potatoArenaMenu.ReduceTimeArray != null && !potatoArenaMenu.ReduceTimeArray.scoreDragger.buttonBehav.greyedOut)
-            // {
-            //     potatoArenaMenu.ReduceTimeArray.pos = new Vector2(0f, -300f);
-            //     potatoArenaMenu.ReduceTimeArray.scoreDragger.buttonBehav.greyedOut = true;
-            // }
-            //
             if (OnlineManager.lobby.isOwner)
             {
                 menu.arenaMainLobbyPage.arenaSettingsInterface.spearsHitCheckbox.selectable = true;//允许点击互相攻击按钮

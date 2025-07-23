@@ -22,7 +22,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.30";
+        public const string version = "0.1.31";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
@@ -33,7 +33,7 @@ namespace MiniGameHotPotato
 
         // public static OnlineGameMode.OnlineGameModeType hotPotatoGameMode = new OnlineGameMode.OnlineGameModeType("HotPotato", true);
 
-        public static bool isMyCoolGameMode(ArenaOnlineGameMode arena, out HotPotatoArena tb)
+        public static bool isHotPotatoGameMode(ArenaOnlineGameMode arena, out HotPotatoArena tb)
         {
             tb = null;
             if (arena.currentGameMode == HotPotatoArena.PotatoArena.value)
@@ -72,9 +72,15 @@ namespace MiniGameHotPotato
                 OnlineResource.OnAvailable += OnlineResource_OnAvailable;
 
                 // On.Menu.MultiplayerMenu.ctor += MultiplayerMenu_ctor;//老的游戏模式注册内容
-                
+
                 //处理传递炸弹的碰撞事件
                 On.Player.Collide += Player_Collide;
+                //炸弹进入捷径的时候封锁捷径,并且把封锁信息同步给竞技场
+                On.Creature.SuckedIntoShortCut += Creature_SuckedIntoShortCut;
+                //处理玩家无法进入被烈焰封锁的洞穴的效果
+                On.Player.Update += Player_Update;
+
+
                 LoadPotatoIcon();
 
                 fullyInit = true;
@@ -85,6 +91,69 @@ namespace MiniGameHotPotato
                 fullyInit = false;
             }
         }
+
+        private void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
+        {
+
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena)
+                && isHotPotatoGameMode(arena, out var potatoArena))
+            {
+                if (potatoArena.blockedShortCut != null && self != HotPotatoArena.bombData.bombHolderCache)
+                {
+                    // 在更新前检查玩家是否尝试进入被锁定的捷径
+                    if (self.enteringShortCut.HasValue)
+                    {
+                        Room room = self.room;
+                        IntVector2 shortcutPos = self.enteringShortCut.Value;
+                        ShortcutData shortcut = room.shortcutData(shortcutPos);
+
+                        if (shortcut.StartTile == potatoArena.blockedShortCut.startTile ||
+                            shortcut.StartTile == potatoArena.blockedShortCut.destTile)
+                        {
+                            // 取消进入捷径
+                            self.enteringShortCut = null;
+
+                            // 弹出管道的音效
+                            room.PlaySound(SoundID.Spear_Bounce_Off_Wall, self.mainBodyChunk);
+
+                            // 给玩家弹出管道
+                            IntVector2 direction = room.ShorcutEntranceHoleDirection(shortcutPos);
+                            for (int i = 0; i < self.bodyChunks.Length; i++)
+                            {
+                                self.bodyChunks[i].vel += RWCustom.Custom.IntVector2ToVector2(direction) * 20f;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 调用原始更新方法
+            orig(self, eu);
+        }
+        private void Creature_SuckedIntoShortCut(On.Creature.orig_SuckedIntoShortCut orig, Creature self, IntVector2 entrancePos, bool carriedByOther)
+        {
+
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena)
+                && isHotPotatoGameMode(arena, out var potatoArena)
+                && self is Player player
+                && player == HotPotatoArena.bombData.bombHolderCache)
+            {
+                // 这是玩家进入捷径
+                Room room = self.room;
+                ShortcutData shortcut = room.shortcutData(entrancePos);
+
+                // 获取起点和终点信息
+                IntVector2 startTile = entrancePos;
+                IntVector2 destTile = shortcut.DestTile;
+                IntVector2 startDir = room.ShorcutEntranceHoleDirection(startTile);
+                IntVector2 destDir = room.ShorcutEntranceHoleDirection(destTile);
+
+                potatoArena.blockedShortCut = new ShortCutBlocker(shortcut, startTile, destTile, startDir, destDir, room);
+                // 处理炸弹持有者进入管道的情况
+            }
+            orig(self, entrancePos, carriedByOther);
+        }
+
 
         private void Menu_ctor(On.Menu.Menu.orig_ctor orig, Menu.Menu self, ProcessManager manager, ProcessManager.ProcessID ID)
         {
@@ -118,7 +187,7 @@ namespace MiniGameHotPotato
         private void Player_Collide(On.Player.orig_Collide orig, Player self, PhysicalObject otherObject, int myChunk, int otherChunk)
         {
             orig(self, otherObject, myChunk, otherChunk);
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && isMyCoolGameMode(arena, out var potatoArena))
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && isHotPotatoGameMode(arena, out var potatoArena))
             {
 
                 //如果炸弹是这个玩家而且CD小于0

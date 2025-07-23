@@ -277,6 +277,43 @@ namespace Meadow_MiniGame_HotPotato.UI
             scoreDragger.UpdateScoreText();
         }
     }
+    // 幸存者数量设置控制器
+    public class SurvivorCountScore : ScoreController
+    {
+        public MenuLabel descriptor;
+        private string idString;
+        // 可以重写幸存者数量的上下限
+        protected override int MinScore(int allowNegativeCounter) => 0; // 最小0个
+        protected override int MaxScore => 10; // 最大10个
+
+        public override string DescriptorString => menu.Translate("Survivor Count:");
+
+        public override int Score
+        {
+            get
+            {
+                return HotPotatoArena.bombData.minSurvivors-1;
+            }
+            set
+            {
+                HotPotatoArena.bombData.minSurvivors = value+1;
+                MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value = value+1;
+                MiniGameHotPotato.MiniGameHotPotato.options._SaveConfigFile();
+                scoreDragger.UpdateScoreText();
+            }
+        }
+
+        public SurvivorCountScore(Menu.Menu menu, MenuObject owner, string description, string idString)
+            : base(menu, owner)
+        {
+            this.idString = idString;
+            descriptor = new MenuLabel(menu, this, description, new Vector2(-120f, 0f), new Vector2(120f, 30f), bigText: false);
+            subObjects.Add(descriptor);
+            
+            scoreDragger.UpdateScoreText();
+        }
+    }
+
 
     // 锁定的分数控制器（只读）
     public class LockedScore : ScoreController

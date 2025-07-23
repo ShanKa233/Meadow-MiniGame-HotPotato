@@ -2,7 +2,7 @@
   "Title": "Meadow Mini Game Hot Potato",
   "Description": "Hot Potato \u2013 Added a new competitive arena game mode to the Meadow multiplayer mod. After entering Meadow\u0027s arena, you can switch to this mode using the left/right options at the top.\r\n\r\nHot Potato (also called TNT Tag) requires at least two players. 3 to 5 seconds after the game starts, a bomb will randomly spawn on one player. The only way to pass it is by touching another player. A countdown at the top of the screen shows when the bomb will explode, and the timer gets shorter with each pass\u2014until finally, BOOM! The unlucky player gets blown to smithereens (evil grin). After exploding, the bomb respawns on a random player, and this continues until only one survivor remains!\r\n\r\nSpecial Thanks:\r\n\r\n    Harvey \u0026 Nope for their secret project from long ago\u2014some code was adapted and modified from it.\r\n\r\n    All the testers! The early versions of this mod were riddled with bugs, making for a rough experience\u2014sorry about that! (wipes tears)\r\n\r\n    Teacher Golden Lizard for the amazing cover art\u2014it\u2019s absolutely gorgeous!\r\n\r\n",
   "ID": "ShanKa.MiniGameHotPotato",
-  "Version": "0.1.28",
+  "Version": "0.1.31",
   "TargetGameVersion": "v1.10.2",
   "Requirements": "henpemaz_rainmeadow",
   "RequirementNames": "",

@@ -22,13 +22,12 @@ namespace Meadow_MiniGame_HotPotato
 
         public int bombTimerIndex = GameTypeSetup.BombTimerIndex;//炸弹时间下标
         public int bombReduceTime = GameTypeSetup.BombReduceTime;//炸弹减少时间(秒)
-
+        public int minSurvivors = GameTypeSetup.MinPlayersRequired;//最小存活玩家数量
 
         public int passCD = 0;
 
         public bool bombPassed = false;
         public Player bombHolderCache;//用于缓存上个炸弹持有者
-
 
         public void HandleBombTimer(bool reset = false, int reduceSecond = 0, ArenaGameSession session = null)
         {
@@ -85,8 +84,11 @@ namespace Meadow_MiniGame_HotPotato
             //用于同步主机的时间设置
             [OnlineField]
             public int bombTimerIndex;
-            [OnlineField]
+            [OnlineField] 
             public int bombReduceTime;
+            // 最小存活玩家数量，当存活玩家数<=此值时游戏结束
+            [OnlineField]
+            public int minSurvivors = 1;
 
             public GameState() { }
 
@@ -105,6 +107,7 @@ namespace Meadow_MiniGame_HotPotato
 
                 bombTimerIndex = bombData.bombTimerIndex;
                 bombReduceTime = bombData.bombReduceTime;
+                minSurvivors = bombData.minSurvivors;
             }
 
             public override Type GetDataType() => typeof(BombGameData);
@@ -126,6 +129,7 @@ namespace Meadow_MiniGame_HotPotato
 
                 bombData.bombTimerIndex = bombTimerIndex;
                 bombData.bombReduceTime = bombReduceTime;
+                bombData.minSurvivors = minSurvivors;
             }
         }
     }

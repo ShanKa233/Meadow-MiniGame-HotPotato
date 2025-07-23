@@ -312,7 +312,10 @@ namespace Meadow_MiniGame_HotPotato
             UpdateBombHolderCache(session);
             // 处理炸弹持有者特效
             UpdateBombHolderEffects(session);
+            
+            UpdateShortCutBlocker(session);
         }
+
 
 
         //检查缓存是否有效

@@ -10,7 +10,7 @@ namespace Meadow_MiniGame_HotPotato
         [RainMeadow.RPCMethod]
         public static void PassBomb(OnlinePlayer newHolder)
         {
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && MiniGameHotPotato.MiniGameHotPotato.isMyCoolGameMode(arena, out var potatoArena))
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && MiniGameHotPotato.MiniGameHotPotato.isHotPotatoGameMode(arena, out var potatoArena))
             {
                 // 给新的炸弹持有者添加晕眩效果
                 var game = (RWCustom.Custom.rainWorld?.processManager?.currentMainLoop as RainWorldGame);
@@ -47,7 +47,7 @@ namespace Meadow_MiniGame_HotPotato
         [RainMeadow.RPCMethod]
         public static void ExplosionPlayer(OnlinePlayer bombHolder)
         {
-            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && MiniGameHotPotato.MiniGameHotPotato.isMyCoolGameMode(arena, out var potatoArena))
+            if (RainMeadow.RainMeadow.isArenaMode(out var arena) && MiniGameHotPotato.MiniGameHotPotato.isHotPotatoGameMode(arena, out var potatoArena))
             {
                 var game = (RWCustom.Custom.rainWorld?.processManager?.currentMainLoop as RainWorldGame);
                 if (game == null) return;
