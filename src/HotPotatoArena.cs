@@ -32,7 +32,14 @@ namespace Meadow_MiniGame_HotPotato
         public static BombGameData bombData;
 
 
-        public override ArenaSetup.GameTypeID GetGameModeId { get => PotatoArena;}
+        private ArenaSetup.GameTypeID gameModeId = PotatoArena;
+
+        public override ArenaSetup.GameTypeID GetGameModeId
+        {
+            get => gameModeId;
+            set => gameModeId = value;
+        }
+
 
 
 
@@ -312,7 +319,7 @@ namespace Meadow_MiniGame_HotPotato
             UpdateBombHolderCache(session);
             // 处理炸弹持有者特效
             UpdateBombHolderEffects(session);
-            
+
             UpdateShortCutBlocker(session);
         }
 

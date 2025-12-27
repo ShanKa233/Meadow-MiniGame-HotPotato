@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Wi5I6EubRAE=",
+  "dgSpecHash": "lZQ6RtQbVhM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Shan_\\source\\repos\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
+  "projectFilePath": "C:\\Users\\Shan_\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Shan_\\.nuget\\packages\\lib.harmony\\2.2.2\\lib.harmony.2.2.2.nupkg.sha512",
     "C:\\Users\\Shan_\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",

@@ -426,24 +426,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Shan_\\.nuget\\packages": {},
-    "C:\\Program Files\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Shan_\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Shan_\\source\\repos\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
+      "projectUniqueName": "C:\\Users\\Shan_\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
       "projectName": "MiniGameHotPotato",
-      "projectPath": "C:\\Users\\Shan_\\source\\repos\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
-      "packagesPath": "C:\\Users\\Shan_\\.nuget\\packages",
-      "outputPath": "C:\\Users\\Shan_\\source\\repos\\Meadow MiniGame HotPotato\\obj\\",
+      "projectPath": "C:\\Users\\Shan_\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
+      "packagesPath": "C:\\Users\\Shan_\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Shan_\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
         "C:\\Users\\Shan_\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -451,7 +446,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -470,7 +464,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net48": {
@@ -489,7 +483,7 @@
             "version": "[13.0.3, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305\\RuntimeIdentifierGraph.json"
       }
     }
   }

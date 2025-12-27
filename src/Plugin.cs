@@ -22,7 +22,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.31";
+        public const string version = "0.1.32";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
