@@ -219,10 +219,10 @@ namespace Meadow_MiniGame_HotPotato
             base.ArenaSessionNextLevel(arena, orig, self, process);
         }
         // 处理游戏更新
-        public override void ArenaSessionUpdate(ArenaOnlineGameMode arena, ArenaGameSession session)
+        public override void ArenaSessionUpdate(On.ArenaGameSession.orig_Update orig, ArenaGameSession self, ArenaOnlineGameMode arena)
         {
-            //虽然原版的方法也没写啥,但是还是先调用一下base
-            base.ArenaSessionUpdate(arena, session);
+            var session = self;
+            base.ArenaSessionUpdate(orig, self, arena);
 
             // 安全检查
             if (session == null || arena == null)
