@@ -108,9 +108,19 @@ namespace Meadow_MiniGame_HotPotato.UI
         }
 
         public void OnShutdown()
-        {
+        {   // 检查是否是房主，只有房主才能保存设置
 
-            // Lobby lobby = OnlineManager.lobby;
+            MiniGameHotPotato.MiniGameHotPotato.options._SaveConfigFile();
+            // if (!(OnlineManager.lobby?.isOwner == true))
+            //     return;
+
+            // 保存所有设置到配置文件
+            // MiniGameHotPotato.MiniGameHotPotato.options.BombTimer.Value = HotPotatoArena.bombData.bombTimerIndex;
+            // MiniGameHotPotato.MiniGameHotPotato.options.BombReduceTime.Value = HotPotatoArena.bombData.bombReduceTimeIndex;
+            // MiniGameHotPotato.MiniGameHotPotato.options.SurvivorCount.Value = HotPotatoArena.bombData.survivorCountIndex;
+
+            // 保存配置文件
+            // MiniGameHotPotato.MiniGameHotPotato.options._SaveConfigFile();
         }
     }
 

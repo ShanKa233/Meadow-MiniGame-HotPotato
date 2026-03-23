@@ -15,6 +15,8 @@ using Meadow_MiniGame_HotPotato.HUDStuff;
 using Meadow_MiniGame_HotPotato.UI;
 
 using ArenaMode = RainMeadow.ArenaOnlineGameMode;
+using System;
+using Random = UnityEngine.Random;
 
 namespace Meadow_MiniGame_HotPotato
 {
@@ -219,10 +221,9 @@ namespace Meadow_MiniGame_HotPotato
             base.ArenaSessionNextLevel(arena, orig, self, process);
         }
         // 处理游戏更新
-        public override void ArenaSessionUpdate(On.ArenaGameSession.orig_Update orig, ArenaGameSession self, ArenaOnlineGameMode arena)
+        public override void ArenaSessionUpdate(On.ArenaGameSession.orig_Update orig, ArenaGameSession session, ArenaOnlineGameMode arena)
         {
-            var session = self;
-            base.ArenaSessionUpdate(orig, self, arena);
+            base.ArenaSessionUpdate(orig, session, arena);
 
             // 安全检查
             if (session == null || arena == null)
@@ -579,16 +580,16 @@ namespace Meadow_MiniGame_HotPotato
     }
 
     internal class HotPotatoInterface : RectangularMenuObject
-{
-    private ArenaMode gameMode;
-    private HotPotatoArena hotPotatoArena;
-    private Menu.Menu menu;
-    private TabContainer.Tab myTab;
-    private object value;
-    private Vector2 size;
-
-    public HotPotatoInterface(Menu.Menu menu, MenuObject owner, Vector2 pos, Vector2 size) : base(menu, owner, pos, size)
     {
+        private ArenaMode gameMode;
+        private HotPotatoArena hotPotatoArena;
+        private Menu.Menu menu;
+        private TabContainer.Tab myTab;
+        private object value;
+        private Vector2 size;
+
+        public HotPotatoInterface(Menu.Menu menu, MenuObject owner, Vector2 pos, Vector2 size) : base(menu, owner, pos, size)
+        {
+        }
     }
-}
 }

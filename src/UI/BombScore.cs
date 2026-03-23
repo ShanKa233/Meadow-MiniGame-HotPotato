@@ -262,7 +262,6 @@ namespace Meadow_MiniGame_HotPotato.UI
             {
                 HotPotatoArena.bombData.bombReduceTime = value;
                 MiniGameHotPotato.MiniGameHotPotato.options.BombReduceTime.Value = value;
-                MiniGameHotPotato.MiniGameHotPotato.options._SaveConfigFile();
                 scoreDragger.UpdateScoreText();
             }
         }
@@ -298,7 +297,6 @@ namespace Meadow_MiniGame_HotPotato.UI
             {
                 HotPotatoArena.bombData.minSurvivors = value+1;
                 MiniGameHotPotato.MiniGameHotPotato.options.MinPlayersRequired.Value = value+1;
-                MiniGameHotPotato.MiniGameHotPotato.options._SaveConfigFile();
                 scoreDragger.UpdateScoreText();
             }
         }

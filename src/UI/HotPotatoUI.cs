@@ -103,6 +103,10 @@ namespace Meadow_MiniGame_HotPotato
             myTab = null;
         }
 
+        public override void OnUIUpdate(ArenaOnlineLobbyMenu menu)
+        {
+            base.OnUIUpdate(menu);
+        }
         public override void OnUIShutDown(ArenaOnlineLobbyMenu menu)
         {
             base.OnUIShutDown(menu);
