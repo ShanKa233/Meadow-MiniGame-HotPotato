@@ -124,7 +124,7 @@ namespace Meadow_MiniGame_HotPotato
             return bombData.gameOver || session?.game?.world?.rainCycle?.TimeUntilRain < 300;
         }
 
-        public override void InitAsCustomGameType(ArenaSetup.GameTypeSetup self)
+        public override void InitAsCustomGameType(ArenaOnlineGameMode arena,ArenaSetup.GameTypeSetup self)
         {
             self.foodScore = 1;                                                 // 食物得分
             self.survivalScore = 3;                                             // 生存得分
