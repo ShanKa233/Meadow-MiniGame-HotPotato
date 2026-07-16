@@ -36,13 +36,7 @@ namespace Meadow_MiniGame_HotPotato
 
         private ArenaSetup.GameTypeID gameModeId = PotatoArena;
 
-        public override ArenaSetup.GameTypeID GetGameModeId
-        {
-            get => gameModeId;
-            set => gameModeId = value;
-        }
-
-
+        public override ArenaSetup.GameTypeID GetGameModeId=>gameModeId;
 
 
         private FireSmoke bombHolderSmoke; // 炸弹持有者的烟雾效果

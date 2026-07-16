@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Shan_\\OneDrive\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj": {}
+    "/home/deck/Source/repos/Rainworld-Mods/Meadow MiniGame HotPotato/Meadow MiniGame HotPotato.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Shan_\\OneDrive\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj": {
+    "/home/deck/Source/repos/Rainworld-Mods/Meadow MiniGame HotPotato/Meadow MiniGame HotPotato.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Shan_\\OneDrive\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
+        "projectUniqueName": "/home/deck/Source/repos/Rainworld-Mods/Meadow MiniGame HotPotato/Meadow MiniGame HotPotato.csproj",
         "projectName": "MiniGameHotPotato",
-        "projectPath": "C:\\Users\\Shan_\\OneDrive\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\Meadow MiniGame HotPotato.csproj",
-        "packagesPath": "C:\\Users\\Shan_\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Shan_\\OneDrive\\source\\repos\\Rainworld-Mods\\Meadow MiniGame HotPotato\\obj\\",
+        "projectPath": "/home/deck/Source/repos/Rainworld-Mods/Meadow MiniGame HotPotato/Meadow MiniGame HotPotato.csproj",
+        "packagesPath": "/home/deck/.nuget/packages/",
+        "outputPath": "/home/deck/Source/repos/Rainworld-Mods/Meadow MiniGame HotPotato/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Shan_\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/deck/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net48"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -39,8 +37,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
+        }
       },
       "frameworks": {
         "net48": {
@@ -49,6 +46,12 @@
             "Lib.Harmony": {
               "target": "Package",
               "version": "[2.2.2, )"
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
             },
             "NUnit": {
               "target": "Package",
@@ -59,7 +62,7 @@
               "version": "[13.0.3, )"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/nix/store/wwbh38sd57i6dv91pqr8czc1mj5sm51h-dotnet-sdk-8.0.422/share/dotnet/sdk/8.0.422/RuntimeIdentifierGraph.json"
         }
       }
     }
