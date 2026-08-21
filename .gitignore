@@ -3,3 +3,8 @@
 .cursor/rules/GameMechanics.mdc
 .cursor/rules/HotPotatoMod.mdc
 bin/**
+obj/**
+.vs/
+*.user
+*.suo
+desktop.ini
