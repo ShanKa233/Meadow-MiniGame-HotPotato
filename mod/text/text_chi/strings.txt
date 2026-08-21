@@ -112,3 +112,11 @@ THE FARTIFICER|肛匠
 THE SLUGPUP|蛞蝓幼崽
 THE UNKNOWN|未知
 Unknown|未知
+
+// Bomb Stats Dialog (HotPotato)
+HOTPOTATO STATS|烫手山蝓统计
+CLOSE|关闭
+PASS|传递
+EXPLODE|爆炸
+SURVIVE|存活
+

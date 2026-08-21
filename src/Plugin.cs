@@ -22,7 +22,7 @@ namespace MiniGameHotPotato
     {
         public const string modID = "ShanKa.MiniGameHotPotato";
         public const string modeName = "MiniGameHotPotato";
-        public const string version = "0.1.35";
+        public const string version = "0.1.4";
         public static MiniGameHotPotato instance;
         public static HotPotatoOptions options;
         private bool init;
@@ -206,6 +206,11 @@ namespace MiniGameHotPotato
                             if (OnlinePhysicalObject.map.TryGetValue(otherPlayer.abstractCreature, out var otherOnlineObject) &&
                                 otherOnlineObject != null && otherOnlineObject.owner != null)
                             {
+                                // 更新统计:旧持有者传递次数+1,并确保新持有者统计存在
+                                var oldHolderStats = HotPotatoArena.bombData.GetStats(HotPotatoArena.bombData.bombHolder);
+                                if (oldHolderStats != null) oldHolderStats.passCount++;
+                                HotPotatoArena.bombData.GetStats(otherOnlineObject.owner);
+
                                 HotPotatoArena.bombData.HandleBombTimer(reduceSecond: options.BombReduceTime.Value);
                                 HotPotatoArena.bombData.bombHolder = otherOnlineObject.owner;
                                 HotPotatoArena.bombData.bombHolderCache = otherPlayer; // 直接更新缓存

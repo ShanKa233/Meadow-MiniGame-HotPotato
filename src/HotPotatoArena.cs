@@ -16,6 +16,7 @@ using Meadow_MiniGame_HotPotato.UI;
 
 using ArenaMode = RainMeadow.ArenaOnlineGameMode;
 using System;
+using System.Linq;
 using Random = UnityEngine.Random;
 
 namespace Meadow_MiniGame_HotPotato
@@ -190,6 +191,14 @@ namespace Meadow_MiniGame_HotPotato
         {
             // 基类会添加标准HUD(文字提示/聊天/观战/在线状态/玩家HUD等),这里只需追加炸弹计时器
             base.On_HUD_HUD_InitMultiplayerHud(arena, orig, self, session);
+
+            // 移除Meadow的准备倒计时HUD(HotPotato有自己的倒计时和炸弹计时器)
+            var prepTimer = self.parts.OfType<RainMeadow.ArenaPrepTimer>().FirstOrDefault();
+            if (prepTimer != null)
+            {
+                prepTimer.ClearSprites();
+                self.parts.Remove(prepTimer);
+            }
 
             //添加炸弹计时器,最重要
             //包括音效的部分都是这里处理的
@@ -428,6 +437,9 @@ namespace Meadow_MiniGame_HotPotato
                 {
                     //如果触发过炸弹,满足直接结算的条件,当只剩下一个人的时候自动结算
                     if (!bombData.fristBombExplode) bombData.fristBombExplode = true;
+                    // 更新统计:被炸玩家爆炸次数+1
+                    var explodedStats = bombData.GetStats(bombData.bombHolder);
+                    if (explodedStats != null) explodedStats.explodedCount++;
                     ExplosionPlayer_Local(player);
                     foreach (var onlinePlayer in OnlineManager.players)
                     {
@@ -547,6 +559,9 @@ namespace Meadow_MiniGame_HotPotato
                 bombData.bombHolder = eligiblePlayers[randomIndex].onlinePlayer;
                 bombData.bombHolderCache = eligiblePlayers[randomIndex].player; // 直接缓存Player实例
 
+                // 确保新持有者统计存在
+                bombData.GetStats(eligiblePlayers[randomIndex].onlinePlayer);
+
                 // 传递炸弹的CD
                 bombData.passCD = 10;
                 // 击晕新持有者防止反复触发,随机选择击晕的时间少一些
@@ -560,6 +575,129 @@ namespace Meadow_MiniGame_HotPotato
                         player.InvokeOnceRPC(HotPotatoArenaRPCs.PassBomb, eligiblePlayers[randomIndex].onlinePlayer);
                     }
                 }
+            }
+        }
+
+        // ============ 统计与结算 ============
+
+        // 玩家HUD图标:炸弹持有者显示土豆图标
+        public override string AddIcon(ArenaOnlineGameMode arena, OnlinePlayerDisplay display, PlayerSpecificOnlineHud hud, SlugcatCustomization customization, OnlinePlayer player)
+        {
+            if (bombData?.bombHolder == player)
+            {
+                return "illustrations/Potato_Symbol_Show_Thumbs";
+            }
+            return base.AddIcon(arena, display, hud, customization, player);
+        }
+
+        // 统计分数计算(占位实现:存活轮回数,之后改成综合算法只改这里)
+        public int CalculatePlayerScore(PlayerBombStats stats)
+        {
+            return stats?.TotalScore ?? 0;
+        }
+
+        // 禁用Meadow的准备倒计时(HotPotato有自己的5秒倒计时和炸弹计时器)
+        public override int SetTimer(ArenaOnlineGameMode arena)
+        {
+            arena.setupTime = 0;
+            return 0;
+        }
+
+        // 阻止Meadow重置准备倒计时
+        public override void ResetGameTimer()
+        {
+            // 空实现:HotPotato不需要Meadow的准备倒计时
+        }
+
+        // 获取指定竞技场玩家的统计分数
+        private int ScoreOf(ArenaOnlineGameMode arena, ArenaSitting.ArenaPlayer arenaPlayer)
+        {
+            var onlinePlayer = ArenaHelpers.FindOnlinePlayerByFakePlayerNumber(arena, arenaPlayer.playerNumber);
+            var stats = onlinePlayer != null ? bombData.GetStats(onlinePlayer) : null;
+            return stats != null ? CalculatePlayerScore(stats) : -1;
+        }
+
+        // 每局结束时的统计结算
+        public override void UpdateArenaSessionFinalStats(ArenaOnlineGameMode arena, ArenaGameSession session)
+        {
+            // 先更新存活轮回数,保证 base 内部调用 DetermineArenaSessionWinners 时看到最新统计
+            foreach (var arenaPlayer in session.arenaSitting.players)
+            {
+                var onlinePlayer = ArenaHelpers.FindOnlinePlayerByFakePlayerNumber(arena, arenaPlayer.playerNumber);
+                if (onlinePlayer == null) continue;
+                var stats = bombData.GetStats(onlinePlayer);
+                if (stats != null && session.EndOfSessionLogPlayerAsAlive(arenaPlayer.playerNumber))
+                {
+                    stats.survivedRounds++;
+                }
+            }
+
+            base.UpdateArenaSessionFinalStats(arena, session);
+
+            // 把统计分数写入 score(供原版结算界面显示)
+            foreach (var arenaPlayer in session.arenaSitting.players)
+            {
+                var onlinePlayer = ArenaHelpers.FindOnlinePlayerByFakePlayerNumber(arena, arenaPlayer.playerNumber);
+                if (onlinePlayer == null) continue;
+                var stats = bombData.GetStats(onlinePlayer);
+                if (stats != null)
+                {
+                    arenaPlayer.score = CalculatePlayerScore(stats);
+                }
+            }
+        }
+
+        // 单局胜利者:按统计分数判定,唯一最高分才算赢
+        public override List<ArenaSitting.ArenaPlayer> DetermineArenaSessionWinners(ArenaOnlineGameMode arena, ArenaGameSession session)
+        {
+            var alivePlayers = session.arenaSitting.players.Where(p => p.alive).ToList();
+            if (alivePlayers.Count < 1) return new List<ArenaSitting.ArenaPlayer>();
+            int bestScore = alivePlayers.Max(p => ScoreOf(arena, p));
+            var winners = alivePlayers.Where(p => ScoreOf(arena, p) == bestScore).ToList();
+            return winners.Count == 1 ? winners : new List<ArenaSitting.ArenaPlayer>();
+        }
+
+        // 整个sitting的胜利者:按统计分数判定,唯一最高分才算赢
+        public override List<ArenaSitting.ArenaPlayer> DetermineArenaSittingWinners(ArenaOnlineGameMode arena, ArenaSitting sitting)
+        {
+            var players = sitting.players.Where(p => p.playerClass != global::RainMeadow.RainMeadow.Ext_SlugcatStatsName.OnlineOverseerSpectator).ToList();
+            if (players.Count < 2) return new List<ArenaSitting.ArenaPlayer>();
+            int bestScore = players.Max(p => ScoreOf(arena, p));
+            var winners = players.Where(p => ScoreOf(arena, p) == bestScore).ToList();
+            return winners.Count == 1 ? winners : new List<ArenaSitting.ArenaPlayer>();
+        }
+
+        // 单局结算排序:统计分数优先
+        public override bool On_ArenaSitting_PlayerSessionResultSort(ArenaOnlineGameMode arena, On.ArenaSitting.orig_PlayerSessionResultSort orig, ArenaSitting sitting, ArenaSitting.ArenaPlayer a, ArenaSitting.ArenaPlayer b)
+        {
+            int sa = ScoreOf(arena, a);
+            int sb = ScoreOf(arena, b);
+            if (sa != sb) return sa > sb;
+            return base.On_ArenaSitting_PlayerSessionResultSort(arena, orig, sitting, a, b);
+        }
+
+        // sitting结算排序:统计分数优先
+        public override bool On_ArenaSitting_PlayerSittingResultSort(ArenaOnlineGameMode arena, On.ArenaSitting.orig_PlayerSittingResultSort orig, ArenaSitting sitting, ArenaSitting.ArenaPlayer a, ArenaSitting.ArenaPlayer b)
+        {
+            int sa = ScoreOf(arena, a);
+            int sb = ScoreOf(arena, b);
+            if (sa != sb) return sa > sb;
+            return base.On_ArenaSitting_PlayerSittingResultSort(arena, orig, sitting, a, b);
+        }
+
+        // 赛后统计对话框
+        public override Dialog AddPostGameStatsFeed(ArenaOnlineGameMode arena, Menu.Menu menu)
+        {
+            try
+            {
+                UnityEngine.Debug.Log("MiniGameHotPotato: AddPostGameStatsFeed 被调用");
+                return new UI.BombStatsDialog(menu.manager, arena);
+            }
+            catch (Exception e)
+            {
+                // 创建失败时回退到Meadow基类对话框,避免菜单卡死
+                UnityEngine.Debug.LogError("MiniGameHotPotato: BombStatsDialog 创建失败: " + e);
+                return base.AddPostGameStatsFeed(arena, menu);
             }
         }
     }

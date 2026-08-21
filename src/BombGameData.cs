@@ -7,6 +7,18 @@ using Meadow_MiniGame_HotPotato.UI;
 
 namespace Meadow_MiniGame_HotPotato
 {
+    // 单个玩家的炸弹模式统计
+    public class PlayerBombStats
+    {
+        public ushort inLobbyId;
+        public int passCount;          // 传递炸弹次数(把炸弹传出去)
+        public int explodedCount;      // 爆炸次数(被炸弹炸死)
+        public int survivedRounds;     // 存活轮回数(每局结束时存活+1)
+
+        // 统计分数(占位实现:存活轮回数,之后可改为综合算法)
+        public int TotalScore => survivedRounds;
+    }
+
     public class BombGameData : OnlineResource.ResourceData
     {
         public OnlinePlayer bombHolder;
@@ -28,6 +40,21 @@ namespace Meadow_MiniGame_HotPotato
 
         public bool bombPassed = false;
         public Player bombHolderCache;//用于缓存上个炸弹持有者
+
+        // 每个玩家的统计(本字段不参与状态同步,靠事件在各客户端保持一致)
+        public Dictionary<ushort, PlayerBombStats> playerStats = new Dictionary<ushort, PlayerBombStats>();
+
+        // 获取或创建指定玩家的统计
+        public PlayerBombStats GetStats(OnlinePlayer player)
+        {
+            if (player == null) return null;
+            if (!playerStats.TryGetValue(player.inLobbyId, out var stats))
+            {
+                stats = new PlayerBombStats { inLobbyId = player.inLobbyId };
+                playerStats[player.inLobbyId] = stats;
+            }
+            return stats;
+        }
 
         public void HandleBombTimer(bool reset = false, int reduceSecond = 0, ArenaGameSession session = null)
         {

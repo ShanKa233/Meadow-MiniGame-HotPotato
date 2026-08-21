@@ -12,6 +12,15 @@ namespace Meadow_MiniGame_HotPotato
         {
             if (RainMeadow.RainMeadow.isArenaMode(out var arena) && MiniGameHotPotato.MiniGameHotPotato.isHotPotatoGameMode(arena, out var potatoArena))
             {
+                // 更新统计:旧持有者传递次数+1,并确保新持有者统计存在
+                var oldHolder = HotPotatoArena.bombData.bombHolder;
+                if (oldHolder != null && oldHolder != newHolder)
+                {
+                    var oldHolderStats = HotPotatoArena.bombData.GetStats(oldHolder);
+                    if (oldHolderStats != null) oldHolderStats.passCount++;
+                }
+                HotPotatoArena.bombData.GetStats(newHolder);
+
                 // 给新的炸弹持有者添加晕眩效果
                 var game = (RWCustom.Custom.rainWorld?.processManager?.currentMainLoop as RainWorldGame);
                 if (game == null) return;
@@ -24,7 +33,6 @@ namespace Meadow_MiniGame_HotPotato
                         var player = abstractCreature.realizedCreature as Player;
                         if (player != null && player.room != null && player.playerState.alive)
                         {
-
                             HotPotatoArena.bombData.HandleBombTimer(reduceSecond: MiniGameHotPotato.MiniGameHotPotato.options.BombReduceTime.Value);
 
                             HotPotatoArena.bombData.bombHolder = newHolder;
@@ -55,6 +63,10 @@ namespace Meadow_MiniGame_HotPotato
                 {
                     return;
                 }
+                // 更新统计:被炸玩家爆炸次数+1
+                var explodedStats = HotPotatoArena.bombData.GetStats(bombHolder);
+                if (explodedStats != null) explodedStats.explodedCount++;
+
                 // 找到对应的玩家并引爆
                 foreach (var abstractCreature in game.session.Players)
                 {
