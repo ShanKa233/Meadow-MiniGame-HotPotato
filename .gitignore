@@ -8,3 +8,5 @@ obj/**
 *.user
 *.suo
 desktop.ini
+mod/plugins/MiniGameHotPotato.dll
+mod/plugins/MiniGameHotPotato.pdb
