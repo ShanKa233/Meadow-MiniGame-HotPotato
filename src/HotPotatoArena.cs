@@ -113,13 +113,16 @@ namespace Meadow_MiniGame_HotPotato
             }
         }
 
-        public override bool IsExitsOpen(ArenaOnlineGameMode arena, On.ArenaBehaviors.ExitManager.orig_ExitsOpen orig, ArenaBehaviors.ExitManager self)
+        public override bool On_ArenaBehaviors_ExitManager_ExitsOpen(ArenaOnlineGameMode arena, On.ArenaBehaviors.ExitManager.orig_ExitsOpen orig, ArenaBehaviors.ExitManager self)
         {
             return bombData.gameOver || session?.game?.world?.rainCycle?.TimeUntilRain < 300;
         }
 
         public override void InitAsCustomGameType(ArenaOnlineGameMode arena,ArenaSetup.GameTypeSetup self)
         {
+            // 先执行基类默认设置(新版基类会初始化 killScores 等)
+            base.InitAsCustomGameType(arena, self);
+
             self.foodScore = 1;                                                 // 食物得分
             self.survivalScore = 3;                                             // 生存得分
             self.spearHitScore = 0;                                             // 矛命中得分
@@ -171,14 +174,10 @@ namespace Meadow_MiniGame_HotPotato
         {
             return "";
         }
-        public override bool SpawnBatflies(FliesWorldAI self, int spawnRoom)
-        {
-            return false;
-        }
 
-        public override void ArenaSessionCtor(ArenaOnlineGameMode arena, On.ArenaGameSession.orig_ctor orig, ArenaGameSession self, RainWorldGame game)
+        public override void On_ArenaGameSession_ctor(ArenaOnlineGameMode arena, On.ArenaGameSession.orig_ctor orig, ArenaGameSession self, RainWorldGame game)
         {
-            base.ArenaSessionCtor(arena, orig, self, game);
+            base.On_ArenaGameSession_ctor(arena, orig, self, game);
             this.session = self;
             if (OnlineManager.lobby.isOwner)
             {
@@ -187,8 +186,11 @@ namespace Meadow_MiniGame_HotPotato
                 ResetCountdown();
             }
         }
-        public override void HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, HUD.HUD self, ArenaGameSession session)
+        public override void On_HUD_HUD_InitMultiplayerHud(ArenaOnlineGameMode arena, On.HUD.HUD.orig_InitMultiplayerHud orig, HUD.HUD self, ArenaGameSession session)
         {
+            // 基类会添加标准HUD(文字提示/聊天/观战/在线状态/玩家HUD等),这里只需追加炸弹计时器
+            base.On_HUD_HUD_InitMultiplayerHud(arena, orig, self, session);
+
             //添加炸弹计时器,最重要
             //包括音效的部分都是这里处理的
             var gameHUD = new BombTimerHUD(self, session.game.cameras[0]);
@@ -197,27 +199,16 @@ namespace Meadow_MiniGame_HotPotato
             // //添加玩家位置显示HUD还没完工
             // var positionHUD = new PlayerPositionHUD(self, session.game.cameras[0]);
             // self.AddPart(positionHUD);
-
-            //添加文字提示一般用于显示左下角地图名和音乐
-            self.AddPart(new HUD.TextPrompt(self));
-            // 如果允许聊天，添加聊天HUD
-            if (MatchmakingManager.currentInstance.canSendChatMessages)
-                self.AddPart(new ChatHud(self, session.game.cameras[0]));
-            // 添加观战HUD    
-            //观战HUD感觉没啥用
-            self.AddPart(new SpectatorHud(self, session.game.cameras[0]));
-            // 添加在线状态HUD
-            self.AddPart(new OnlineHUD(self, session.game.cameras[0], arena));
         }
 
-        public override void ArenaSessionNextLevel(ArenaOnlineGameMode arena, On.ArenaSitting.orig_NextLevel orig, ArenaSitting self, ProcessManager process)
+        public override void On_ArenaSitting_NextLevel(ArenaOnlineGameMode arena, On.ArenaSitting.orig_NextLevel orig, ArenaSitting self, ProcessManager process)
         {
-            base.ArenaSessionNextLevel(arena, orig, self, process);
+            base.On_ArenaSitting_NextLevel(arena, orig, self, process);
         }
         // 处理游戏更新
-        public override void ArenaSessionUpdate(On.ArenaGameSession.orig_Update orig, ArenaGameSession session, ArenaOnlineGameMode arena)
+        public override void On_ArenaGameSession_Update(ArenaOnlineGameMode arena, On.ArenaGameSession.orig_Update orig, ArenaGameSession session)
         {
-            base.ArenaSessionUpdate(orig, session, arena);
+            base.On_ArenaGameSession_Update(arena, orig, session);
 
             // 安全检查
             if (session == null || arena == null)
